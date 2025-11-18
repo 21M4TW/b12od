@@ -1,57 +1,79 @@
 #include "bolt12_offer_decode.h"
+#include "bolt12_tlv_field_check.h"
 
-int bolt12_offer_processor(struct tlv_record const* const records, const size_t nrecords, void* data)
+u64 bolt12_offer_field_processor(struct bolt12_object* b12)
 {
-  struct tlv_record const* const last_record = records + nrecords-1;
-  struct bolt12_offer* b12 = (struct bolt12_offer*)data;
+  struct tlv_record const* const last_record = b12->records + b12->nrecords-1;
+  struct bolt12_offer* b12_offer = (struct bolt12_offer*)b12;
+
+  if(last_record->type < 1 || last_record->type > 1999999999 || (last_record->type > 79 && last_record->type < 1000000000)) return BOLT12_INVALID_TLV_TYPE;
 
   switch(last_record->type){
     case TYPE_OFFER_CHAINS:
-      b12->chains = last_record;
+      if(!check_offer_chains(last_record)) return last_record->type;
+      b12_offer->chains = last_record;
       break;
 
     case TYPE_OFFER_METADATA:
-      b12->metadata = last_record;
+      b12_offer->metadata = last_record;
       break;
 
     case TYPE_OFFER_CURRENCY:
-      b12->currency = last_record;
+      if(!check_offer_currency(last_record)) return last_record->type;
+      b12_offer->currency = last_record;
       break;
 
     case TYPE_OFFER_AMOUNT:
-      b12->amount = last_record;
+      if(!check_offer_amount(last_record)) return last_record->type;
+      b12_offer->amount = last_record;
       break;
 
     case TYPE_OFFER_DESCRIPTION:
-      b12->description = last_record;
+      b12_offer->description = last_record;
       break;
 
     case TYPE_OFFER_FEATURES:
-      b12->features = last_record;
+      b12_offer->features = last_record;
       break;
 
     case TYPE_OFFER_ABSOLUTE_EXPIRY:
-      b12->absolute_expiry = last_record;
+      if(!check_offer_absolute_expiry(last_record)) return last_record->type;
+      b12_offer->absolute_expiry = last_record;
       break;
 
     case TYPE_OFFER_PATHS:
-      b12->paths = last_record;
+      if(!check_offer_paths(last_record)) return last_record->type;
+      b12_offer->paths = last_record;
       break;
 
     case TYPE_OFFER_ISSUER:
-      b12->issuer = last_record;
+      b12_offer->issuer = last_record;
       break;
 
     case TYPE_OFFER_QUANTITY_MAX:
-      b12->quantity_max = last_record;
+      if(!check_offer_quantity_max(last_record)) return last_record->type;
+      b12_offer->quantity_max = last_record;
       break;
 
     case TYPE_OFFER_ISSUER_ID:
-      b12->issuer_id = last_record;
+      if(!check_offer_issuer_id(last_record)) return last_record->type;
+      b12_offer->issuer_id = last_record;
       break;
     
     default:
-      return 0;
+      return BOLT12_UNKNOWN_TLV_TYPE;
   };
-  return 1;
+  return BOLT12_OK;
+}
+
+u64 bolt12_offer_record_processor(struct bolt12_object* b12)
+{
+  struct bolt12_offer const* const b12_offer = (struct bolt12_offer const*)b12;
+
+  if(b12_offer->amount && !b12_offer->description) return TYPE_OFFER_DESCRIPTION;
+
+  if(b12_offer->currency && !b12_offer->amount) return TYPE_OFFER_AMOUNT;
+
+  if(!b12_offer->paths && !b12_offer->issuer_id) return TYPE_OFFER_PATHS;
+  return BOLT12_OK;
 }

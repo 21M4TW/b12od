@@ -67,9 +67,10 @@ int bech32_decode(const char* bech32_string, char** prefix, uint8_t** data, size
   int error;
 
   //Skip any initial space
-  while(isspace(*bech32_string)) ++bech32_string;
+  while(_rtable[*bech32_string] == BECH32_SPACE) ++bech32_string;
   tot_len = strlen(bech32_string);
 
+  //Preamble extraction. No support for white spaces within the preamble
   for(i=0; i<tot_len; ++i) {
     upper |= isupper(bech32_string[i]);
     lower |= islower(bech32_string[i]);
@@ -99,17 +100,33 @@ int bech32_decode(const char* bech32_string, char** prefix, uint8_t** data, size
     return BECH32_MEMORY_ALLOC_ISSUE;
   }
 
-  //Decode the bech32 data
+  //Decode bech32 data
   for(; i < tot_len; ++i) {
     upper |= isupper(bech32_string[i]);
     lower |= islower(bech32_string[i]);
-    c = _rtable[bech32_string[i]];
 
-    if(c == BECH32_SPACE) continue;
+    if(bech32_string[i] == '+') {
 
-    if(c == BECH32_ERROR) {
-      error = BECH32_INVALID_CHARACTER;
-      goto bech32_error_cleanup;
+      for(++i; i < tot_len; ++i) {
+	c = _rtable[bech32_string[i]];
+
+	if(c == BECH32_ERROR) {
+	  error = BECH32_INVALID_CHARACTER;
+	  goto bech32_error_cleanup;
+	}
+
+	if(c != BECH32_SPACE) break;
+      }
+
+      if(i == tot_len) break;
+
+    } else {
+      c = _rtable[bech32_string[i]];
+
+      if(c == BECH32_ERROR) {
+	error = BECH32_INVALID_CHARACTER;
+	goto bech32_error_cleanup;
+      }
     }
     acc = (acc << 5) | c;
     acclen += 5;

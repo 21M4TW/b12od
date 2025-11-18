@@ -7,7 +7,7 @@
 
 struct bolt12_offer
 {
-  int (*processor)(struct tlv_record const* const records, const size_t nrecords, void* data);
+  _BOLT12_OBJECT_STRUCT_FIELDS
   struct tlv_record const* chains;
   struct tlv_record const* metadata;
   struct tlv_record const* currency;
@@ -21,8 +21,15 @@ struct bolt12_offer
   struct tlv_record const* issuer_id;
 };
 
-int bolt12_offer_processor(struct tlv_record const* const records, const size_t nrecords, void* data);
+u64 bolt12_offer_field_processor(struct bolt12_object* b12);
+u64 bolt12_offer_record_processor(struct bolt12_object* b12);
 
-static inline void init_bolt12_offer(struct bolt12_offer* b12){memset(b12, 0, sizeof(struct bolt12_offer)); b12->processor = bolt12_offer_processor;}
+static inline void init_bolt12_offer(struct bolt12_offer* b12)
+{
+  memset(b12, 0, sizeof(struct bolt12_offer));
+  b12->field_processor = bolt12_offer_field_processor;
+  b12->record_processor = bolt12_offer_record_processor;
+  b12->expected_prefix = "LNO";
+}
 
 #endif

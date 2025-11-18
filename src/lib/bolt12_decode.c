@@ -8,22 +8,22 @@
 
 #define RSCALING (1.25)
 
-int bolt12_decode(const char* string, bolt12_object_ptr bolt12, const char* expected_prefix, struct tlv_record** records, size_t* nrecords)
+u64 bolt12_decode(const char* string, bolt12_object_ptr bolt12)
 {
   char* prefix;
   uint8_t *data, *off_data;
   size_t len;
   size_t narecords=2;
-  *nrecords=0;
   size_t exp_pref_len, pref_len;
   size_t i;
-  int error;
+  u64 error;
   struct bolt12_object* b12=(struct bolt12_object*)bolt12;
+  b12->nrecords = 0;
 
-  if((error = bech32_decode(string, &prefix, &data, &len)) != BECH32_OK) return error;
+  if((error = bech32_decode(string, &prefix, &data, &len)) != BECH32_OK) return (BOLT12_DECODE_BECH32_ERROR_BASE+error);
 
   off_data = data;
-  exp_pref_len = strlen(expected_prefix);
+  exp_pref_len = strlen(b12->expected_prefix);
   pref_len = strlen(prefix);
 
   if(pref_len != exp_pref_len) {
@@ -33,64 +33,72 @@ int bolt12_decode(const char* string, bolt12_object_ptr bolt12, const char* expe
 
   for(i=0; i < pref_len; ++i)
 
-    if(tolower(prefix[i]) != tolower(expected_prefix[i])) {
+    if(tolower(prefix[i]) != tolower(b12->expected_prefix[i])) {
       error = BOLT12_INVALID_BECH32_PREFIX;
       goto bolt12_error_cleanup;
     }
 
-  *records = (struct tlv_record*)malloc(narecords*sizeof(struct tlv_record));
+  b12->records = (struct tlv_record*)malloc(narecords*sizeof(struct tlv_record));
 
   while(len > 0) {
-    i = read_tlv(off_data, len, (*records)+*nrecords);
+    i = read_tlv(off_data, len, (b12->records)+b12->nrecords);
 
     if(i==0) break;
-    //printf("Field type %lu with length %lu\n", (*records)[*nrecords].type, (*records)[*nrecords].length);
+    //printf("Field type %lu with length %lu\n", (b12->records)[b12->nrecords].type, (b12->records)[b12->nrecords].length);
     len -= i;
     off_data += i;
-    ++*nrecords;
+    ++b12->nrecords;
 
-    if(*nrecords > 1 && (*records)[*nrecords-1].type <= (*records)[*nrecords-2].type) {
-      free_bolt12_records(*records, *nrecords);
+    if(b12->nrecords > 1 && (b12->records)[b12->nrecords-1].type <= (b12->records)[b12->nrecords-2].type) {
+      free_bolt12_records(b12);
       error = BOLT12_INVALID_TLV_ORDERING;
       goto bolt12_error_cleanup;
     }
 
-    if(b12->processor(*records, *nrecords, b12) == 0) {
+    error = b12->field_processor(b12);
+
+    if(error != BOLT12_OK) {
 
       //Even unknown types cause a failure
-      if(((*records)[*nrecords-1].type%2) == 0) {
-	free_bolt12_records(*records, *nrecords);
-	error = BOLT12_UNKNOWN_EVEN_TLV_TYPE;
+      if(error != BOLT12_UNKNOWN_TLV_TYPE || ((b12->records)[b12->nrecords-1].type%2) == 0) {
+	free_bolt12_records(b12);
 	goto bolt12_error_cleanup;
       }
-      --*nrecords;
+      --b12->nrecords;
     }
 
-    if(*nrecords == narecords) {
+    if(b12->nrecords == narecords) {
       narecords = ceil(narecords*RSCALING);
-      *records = (struct tlv_record*)realloc(*records, narecords*sizeof(struct tlv_record));
+      b12->records = (struct tlv_record*)realloc(b12->records, narecords*sizeof(struct tlv_record));
     }
   }
 
   if(len > 0) {
-    free_bolt12_records(*records, *nrecords);
+    free_bolt12_records(b12);
     error = BOLT12_INVALID_TLV_RECORD;
     goto bolt12_error_cleanup;
   }
-  *records = (struct tlv_record*)realloc(*records, *nrecords*sizeof(struct tlv_record));
+
+  error = b12->record_processor(b12);
+
+  if(error != BOLT12_OK) {
+    free_bolt12_records(b12);
+    goto bolt12_error_cleanup;
+  }
+  b12->records = (struct tlv_record*)realloc(b12->records, b12->nrecords*sizeof(struct tlv_record));
   return BOLT12_OK;
 
 bolt12_error_cleanup:
   free(prefix);
   free(data);
-  *nrecords = 0;
+  b12->nrecords = 0;
   return error;
 }
 
-void free_bolt12_records(struct tlv_record* const records, const size_t nrecords)
+void free_bolt12_records(struct bolt12_object* const b12)
 {
   int i;
 
-  for(i=0; i < nrecords; ++i) free_tlv(records+i);
-  free(records);
+  for(i=0; i < b12->nrecords; ++i) free_tlv(b12->records+i);
+  free(b12->records);
 }
