@@ -1,0 +1,102 @@
+#include "safe_char.h"
+
+uint16_t _ctable[256] = {
+  //0 0x0
+  SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACCE,   
+  SC_ACCE,  SC_ASPE,  SC_ASPE,  SC_ASPE,  SC_ASPE,  SC_ASPE,  SC_ACC,   SC_ACC,  
+  SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,  
+  SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,  
+
+  //32 0x20
+  SC_ASPS,  SC_ASYM,  SC_ASYE,  SC_ASYM,  SC_ASYM,  SC_ASYM,  SC_ASYM,  SC_ASYM, 
+  SC_ASYM,  SC_ASYM,  SC_ASYM,  SC_ASYM,  SC_ASYM,  SC_ASYM,  SC_ASYM,  SC_ASYM, 
+  SC_ANUM,  SC_ANUM,  SC_ANUM,  SC_ANUM,  SC_ANUM,  SC_ANUM,  SC_ANUM,  SC_ANUM, 
+  SC_ANUM,  SC_ANUM,  SC_ASYM,  SC_ASYM,  SC_ASYM,  SC_ASYM,  SC_ASYM,  SC_ASYM, 
+
+  //64 0x40
+  SC_ASYM,  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP, 
+  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP, 
+  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_AAUP, 
+  SC_AAUP,  SC_AAUP,  SC_AAUP,  SC_ASYM,  SC_ASYE,  SC_ASYM,  SC_ASYM,  SC_ASYM, 
+
+  //96 0x60
+  SC_ASYM,  SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW,
+  SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW,
+  SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW, SC_AALOW,
+  SC_AALOW, SC_AALOW, SC_AALOW, SC_ASYM,  SC_ASYM,  SC_ASYM,  SC_ASYM,  SC_ACC,
+
+  //128 0x80
+  SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,   
+  SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,   
+  SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,   
+  SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,   
+
+  //160 0xA9
+  SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,   
+  SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,   
+  SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,   
+  SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,    SC_UO,   
+
+  //192 0XC0
+  SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,  
+  SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,  
+  SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,  
+  SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,   SC_U2F,  
+
+  //224 0xE0
+  SC_U3F,   SC_U3F,   SC_U3F,   SC_U3F,   SC_U3F,   SC_U3F,   SC_U3F,   SC_U3F,  
+  SC_U3F,   SC_U3F,   SC_U3F,   SC_U3F,   SC_U3F,   SC_U3F,   SC_U3F,   SC_U3F,  
+  SC_U4F,   SC_U4F,   SC_U4F,   SC_U4F,   SC_U4F,   SC_U4F,   SC_U4F,   SC_U4F,  
+  SC_U4F,   SC_U4F,   SC_U4F,   SC_U4F,   SC_U4F,   SC_U4F,   SC_U4F,   SC_U4F
+};
+
+char const* const _etable[256] = {
+  //0 0x0
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  "\\a",   
+  "\\b", "\\t", "\\n", "\\v", "\\f", "\\r", NULL,  NULL,  
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  
+
+  //32 0x20
+  NULL,  NULL,  "\\\"",NULL,  NULL,  NULL,  NULL,  NULL, 
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL, 
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL, 
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL, 
+
+  //64 0x40
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL, 
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL, 
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL, 
+  NULL,  NULL,  NULL,  NULL,  "\\\\",NULL,  NULL,  NULL, 
+
+  //96 0x60
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,
+
+  //128 0x80
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,   
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,   
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,   
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,   
+
+  //160 0xA9
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,   
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,   
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,   
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,   
+
+  //192 0XC0
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  
+
+  //224 0xE0
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  
+  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL
+};
+
