@@ -38,17 +38,17 @@
 extern uint16_t _ctable[256];
 extern char const* const _etable[256];
 
+enum eSafeCharErrors{SAFE_CHAR_OUTBUF_TOO_SHORT = -1, SAFE_CHAR_INVALID_INPUT_CHAR = -2};
+
 inline static int8_t read_single_utf8(const char** inbuf, size_t* inbuflen, char outbuf[6], const uint16_t char_mask)
 {
   if(*inbuflen == 0) return EOF;
-  printf("ok0\n");
 
   if((_ctable[(*inbuf)[0]]&char_mask) == 0) {
     ++(*inbuf);
     --(*inbuflen);
-    return 0;
+    return SAFE_CHAR_INVALID_INPUT_CHAR;
   }
-  printf("ok1\n");
 
   //If single byte in and out
   if(_ctable[(*inbuf)[0]]&SC_APRIN_MASK) {
@@ -57,7 +57,6 @@ inline static int8_t read_single_utf8(const char** inbuf, size_t* inbuflen, char
     --(*inbuflen);
     return 1;
   }
-  printf("ok2\n");
 
   //If is escapable with \ (not necessarily printable, single byte in, two bytes out)
   if(_etable[(*inbuf)[0]]) {
@@ -67,15 +66,12 @@ inline static int8_t read_single_utf8(const char** inbuf, size_t* inbuflen, char
     --(*inbuflen);
     return 2;
   }
-  printf("ok3\n");
 
   //If seems to be 2-byte UTF-8 
   if(_ctable[(*inbuf)[0]]&SC_U2F) {
-    printf("ok4\n");
 
     //If input buffer insufficient, assume it is truncated
     if(*inbuflen < 2) return EOF;
-    printf("ok5\n");
 
     //If we are not dealing with an UTF-8 control character (U+0080 - U+009F)
     if(((*inbuf)[0]&0x1) || ((*inbuf)[1]&0x20)) {
@@ -91,11 +87,9 @@ inline static int8_t read_single_utf8(const char** inbuf, size_t* inbuflen, char
 
     //Else if it seems to be 3-byte UTF-8
   } else if(_ctable[(*inbuf)[0]]&SC_U3F) {
-    printf("ok6\n");
 
     //If input buffer insufficient, assume it is truncated
     if(*inbuflen < 3) return EOF;
-    printf("ok7\n");
 
     //If 3-byte UTF-8 is confirmed
     if((_ctable[(*inbuf)[1]]&SC_UO) && (_ctable[(*inbuf)[2]]&SC_UO)) {
@@ -109,11 +103,9 @@ inline static int8_t read_single_utf8(const char** inbuf, size_t* inbuflen, char
 
     //Else if it seems to be 4-byte UTF-8
   } else if(_ctable[(*inbuf)[0]]&SC_U4F) {
-    printf("ok8\n");
 
     //If input buffer insufficient, assume it is truncated
     if(*inbuflen < 4) return EOF;
-    printf("ok9\n");
 
     //If 4-byte UTF-8 is confirmed
     if((_ctable[(*inbuf)[1]]&SC_UO) && (_ctable[(*inbuf)[2]]&SC_UO) && (_ctable[(*inbuf)[3]]&SC_UO)) {
@@ -123,7 +115,6 @@ inline static int8_t read_single_utf8(const char** inbuf, size_t* inbuflen, char
       return 4;
     }
   }
-  printf("ok10\n");
 
   //Otherwise we assume unknown encoding, and we \u escape the character
   outbuf[0] = '\\';
@@ -141,9 +132,11 @@ inline static ssize_t read_utf8(const char* inbuf, size_t inbuflen, char* const 
   int8_t ret;
   size_t outlen=0;
 
-  if(outbuflen < 6*inbuflen) return -1;
+  if(outbuflen < 6*inbuflen) return SAFE_CHAR_OUTBUF_TOO_SHORT;
 
-  while((ret = read_single_utf8(&inbuf, &inbuflen, outbuf+outlen, char_mask)) >=0) outlen += ret;
+  while((ret = read_single_utf8(&inbuf, &inbuflen, outbuf+outlen, char_mask)) >= 0) outlen += ret;
+
+  if(ret < 0) return ret;
 
   return outlen;
 }

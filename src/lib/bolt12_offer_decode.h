@@ -21,8 +21,8 @@ struct bolt12_offer
   struct tlv_record const* issuer_id;
 };
 
-u64 bolt12_offer_field_processor(struct bolt12_object* b12);
-u64 bolt12_offer_record_processor(struct bolt12_object* b12);
+int64_t bolt12_offer_field_processor(struct bolt12_object* b12);
+int64_t bolt12_offer_record_processor(struct bolt12_object* b12);
 
 static inline void init_bolt12_offer(struct bolt12_offer* b12)
 {

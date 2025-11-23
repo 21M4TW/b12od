@@ -1,7 +1,7 @@
 #include "bolt12_offer_decode.h"
 #include "bolt12_tlv_field_check.h"
 
-u64 bolt12_offer_field_processor(struct bolt12_object* b12)
+int64_t bolt12_offer_field_processor(struct bolt12_object* b12)
 {
   struct tlv_record const* const last_record = b12->records + b12->nrecords-1;
   struct bolt12_offer* b12_offer = (struct bolt12_offer*)b12;
@@ -66,7 +66,7 @@ u64 bolt12_offer_field_processor(struct bolt12_object* b12)
   return BOLT12_OK;
 }
 
-u64 bolt12_offer_record_processor(struct bolt12_object* b12)
+int64_t bolt12_offer_record_processor(struct bolt12_object* b12)
 {
   struct bolt12_offer const* const b12_offer = (struct bolt12_offer const*)b12;
 

@@ -159,3 +159,21 @@ bech32_error_cleanup:
   }
   return error;
 }
+
+const char* bech32_error(const int error)
+{
+  switch(error) {
+    case BECH32_OK:
+      return "Bech32 decoding: No error";
+    case BECH32_NO_PREAMBLE_DIVIDER:
+      return "Bech32 decoding: Preamble divider not found";
+    case BECH32_UPPER_LOWER_MIX:
+      return "Bech32 decoding: Mix of lower and upper case characters";
+    case BECH32_MEMORY_ALLOC_ISSUE:
+      return "Bech32 decoding: Memory allocation error";
+    case BECH32_INVALID_CHARACTER:
+      return "Bech32 decoding: Invalid character";
+    default:
+      return "Bech32 decoding: Unknown error";
+  }
+}

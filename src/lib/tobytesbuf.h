@@ -42,7 +42,7 @@ inline static int tobb_reserve(struct bytesbuf* const bb, const size_t alloc)
 inline static int tobb_reserve_for(struct bytesbuf* const bb, const size_t extra_alloc)
 {
 #define _TOBB_RESERVE_FOR_(XTRA) {\
-  size_t needed_alloc = bb->size + XTRA; \
+  size_t needed_alloc = bb->size + (XTRA); \
  \
   if(needed_alloc > bb->alloc) { \
     size_t target_alloc = ceil(needed_alloc * bb->grow_fact); \
@@ -62,8 +62,8 @@ inline static int tobb_reserve_for(struct bytesbuf* const bb, const size_t extra
 }
 
 #define _tobb_unsafe(bb, bytes, nbytes) {\
-  memcpy(bb->buf + bb->size, bytes, nbytes); \
-  bb->size += nbytes; \
+  memcpy((bb)->buf + (bb)->size, (bytes), (nbytes)); \
+  (bb)->size += (nbytes); \
 }
 
 inline static int tobb(struct bytesbuf* const bb, uint8_t const* const bytes, const size_t nbytes)
@@ -74,8 +74,7 @@ inline static int tobb(struct bytesbuf* const bb, uint8_t const* const bytes, co
 }
 
 #define _tobb8_unsafe(bb, value) {\
-  bb->buf[0] = value; \
-  bb->size += 1; \
+  (bb)->buf[((bb)->size)++] = (value); \
 }
 
 inline static int tobb8(struct bytesbuf* const bb, uint8_t value)
@@ -86,8 +85,8 @@ inline static int tobb8(struct bytesbuf* const bb, uint8_t value)
 }
 
 #define _tobb16_unsafe(bb, value) {\
-  htobebuf16(value, bb->buf); \
-  bb->size += 1; \
+  htobebuf16((value), (bb)->buf + (bb)->size); \
+  (bb)->size += 2; \
 }
 
 inline static int tobb16(struct bytesbuf* const bb, uint16_t value)
@@ -98,8 +97,8 @@ inline static int tobb16(struct bytesbuf* const bb, uint16_t value)
 }
 
 #define _tobb32_unsafe(bb, value) {\
-  htobebuf32(value, bb->buf); \
-  bb->size += 1; \
+  htobebuf32((value), (bb)->buf + (bb)->size); \
+  (bb)->size += 4; \
 }
 
 inline static int tobb32(struct bytesbuf* const bb, uint32_t value)
@@ -110,8 +109,8 @@ inline static int tobb32(struct bytesbuf* const bb, uint32_t value)
 }
 
 #define _tobb64_unsafe(bb, value) {\
-  htobebuf64(value, bb->buf); \
-  bb->size += 1; \
+  htobebuf64((value), (bb)->buf + (bb)->size); \
+  (bb)->size += 8; \
 }
 
 inline static int tobb64(struct bytesbuf* const bb, uint64_t value)
@@ -121,41 +120,42 @@ inline static int tobb64(struct bytesbuf* const bb, uint64_t value)
   return 0;
 }
 
-#define tobb_hexenc_unsafe(bb, bytes, nbytes) {\
+#define _tobb_hex_enc_unsafe(bb, bytes, nbytes) {\
   size_t b; \
  \
-  for(b=0; b<nbytes; ++b) hex8(bytes[b], (char*)(bb->buf+2*b)); \
-  bb->size += 2*nbytes; \
+  for(b=0; b<(nbytes); ++b) hex8((bytes)[b], (char*)((bb)->buf + (bb)->size + 2*b)); \
+  (bb)->size += 2*(nbytes); \
 }
 
-inline static int tobb_hexenc(struct bytesbuf* const bb, uint8_t const* const bytes, const size_t nbytes)
+inline static int tobb_hex_enc(struct bytesbuf* const bb, uint8_t const* const bytes, const size_t nbytes)
 {
   _TOBB_RESERVE_FOR_(2*nbytes);
-  tobb_hexenc_unsafe(bb, bytes, nbytes);
+  _tobb_hex_enc_unsafe(bb, bytes, nbytes);
   return 0;
 }
 
-#define tobb_trunc_hexenc_unsafe(bb, bytes, nbytes) {\
+#define _tobb_trunc_hex_enc_unsafe(bb, bytes, nbytes) {\
   size_t b; \
   size_t h=0; \
  \
-  for(b=0; b<nbytes; ++b) \
+  for(b=0; b<(nbytes); ++b) \
  \
-    if(bytes[b]) { \
-      hex8(bytes[b], (char*)(bb->buf+h)); \
+    if((bytes)[b]) { \
+      hex8((bytes)[b], (char*)((bb)->buf + (bb)->size + h)); \
       h += 2; \
     } \
-  bb->size += h; \
+  (bb)->size += h; \
 }
 
-inline static int tobb_trunc_hexenc(struct bytesbuf* const bb, uint8_t const* const bytes, const size_t nbytes)
+inline static int tobb_trunc_hex_enc(struct bytesbuf* const bb, uint8_t const* const bytes, const size_t nbytes)
 {
   _TOBB_RESERVE_FOR_(2*nbytes);
-  tobb_trunc_hexenc_unsafe(bb, bytes, nbytes);
+  _tobb_trunc_hex_enc_unsafe(bb, bytes, nbytes);
   return 0;
 }
 
 #define tobb_str(bb, string) tobb(bb, string, strlen(string))
+#define _tobb_str_unsafe(bb, string) _tobb_unsafe(bb, string, strlen(string))
 
 inline static void tobb_free(struct bytesbuf* const bb){free(bb->buf);}
 
