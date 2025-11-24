@@ -35,10 +35,8 @@
 #define SC_APRIE_MASK (SC_ANSE_MASK|SC_ASPAE)
 #define SC_ALL        (~(uint16_t)0)
 
-extern uint16_t _ctable[256];
+extern const uint16_t _ctable[256];
 extern char const* const _etable[256];
-
-enum eSafeCharErrors{SAFE_CHAR_OUTBUF_TOO_SHORT = -1, SAFE_CHAR_INVALID_INPUT_CHAR = -2};
 
 inline static int8_t read_single_utf8(const char** inbuf, size_t* inbuflen, char outbuf[6], const uint16_t char_mask)
 {
@@ -47,7 +45,7 @@ inline static int8_t read_single_utf8(const char** inbuf, size_t* inbuflen, char
   if((_ctable[(*inbuf)[0]]&char_mask) == 0) {
     ++(*inbuf);
     --(*inbuflen);
-    return SAFE_CHAR_INVALID_INPUT_CHAR;
+    return 0;
   }
 
   //If single byte in and out
@@ -132,11 +130,9 @@ inline static ssize_t read_utf8(const char* inbuf, size_t inbuflen, char* const 
   int8_t ret;
   size_t outlen=0;
 
-  if(outbuflen < 6*inbuflen) return SAFE_CHAR_OUTBUF_TOO_SHORT;
+  if(outbuflen < 6*inbuflen) return -1;
 
   while((ret = read_single_utf8(&inbuf, &inbuflen, outbuf+outlen, char_mask)) >= 0) outlen += ret;
-
-  if(ret < 0) return ret;
 
   return outlen;
 }

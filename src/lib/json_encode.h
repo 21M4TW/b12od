@@ -36,7 +36,7 @@ inline static int _json_add_name(struct json* const jctx, const char* name, size
 {
   int ret;
 
-  if((ret=tobb_reserve_for(&jctx->bb, length+1))) return ret; //+1 for possible "," that can occur
+  if((ret=tobb_reserve_for(&jctx->bb, length))) return ret;
   _json_add_name_unsafe(jctx, name, length);
   return 0;
 }
@@ -46,10 +46,25 @@ inline static int _json_add_name(struct json* const jctx, const char* name, size
 inline static int json_add_ ## vname ## _value(struct json* const jctx, uint8_t const* const data, const size_t dlen) \
 { \
   int ret; \
- \
+  \
   if((ret=tobb_reserve_for(&jctx->bb, vname ## _value_maxlength(dlen)+1))) return ret; /* +1 for possible "," that can occur */ \
-  if((ret=vname ## _value_func(data, dlen, &jctx->bb))) return ret; \
-  return 0; \
+  if((ret=vname ## _value_func(data, dlen, &jctx->bb)) < 0) return ret; \
+  return ret; \
+}
+
+#define json_add_fixed_array(jctx, vname, data, dlen) _json_add_ ## vname ## _fixed_array(jctx, data, dlen)
+#define JSON_ADD_FIXED_ARRAY_DEF(vname) \
+inline static int json_add_ ## vname ## _fixed_array(struct json* const jctx, uint8_t const* const data, const size_t dlen) \
+{ \
+  int ret; \
+  size_t nelements = dlen / vname ## _element_length; \
+  size_t i; \
+  \
+  if((ret=tobb_reserve_for(&jctx->bb, nelements * (vname ## _value_maxlength(vname ## _element_length)+1 + 2)))) return ret; /* +1 for nelements-1  elements, +2 for [], +1 for possible "," at the end */ \
+  \
+  for(i=0; i < nelements; ++i) \
+    if((ret=vname ## _value_func(data + i * vname ## _element_length, vname ## _element_length, &jctx->bb)) < 0) return ret; \
+  return ret; \
 }
 
 #define json_add_name_value(jctx, name, vname, data, dlen) _json_add_name_ ## vname ## _value(jctx, "\""name"\":", strlen("\""name"\":"), data, dlen)
@@ -57,11 +72,27 @@ inline static int json_add_ ## vname ## _value(struct json* const jctx, uint8_t 
 inline static int _json_add_name_ ## vname ## _value(struct json* const jctx, const char* name, size_t length, uint8_t const* const data, const size_t dlen) \
 { \
   int ret; \
- \
+  \
   if((ret=tobb_reserve_for(&jctx->bb, length+vname ## _value_maxlength(dlen)+1))) return ret; /* +1 for possible "," that can occur */ \
   _json_add_name_unsafe(jctx, name, length); \
-  if((ret=vname ## _value_func(data, dlen, &jctx->bb))) return ret; \
-  return 0; \
+  if((ret=vname ## _value_func(data, dlen, &jctx->bb)) < 0) return ret; \
+  return length+ret; \
+}
+
+#define json_add_name_fixed_array(jctx, name, vname, data, dlen) _json_add_name_ ## vname ## _fixed_array(jctx, "\""name"\":", strlen("\""name"\":"), data, dlen)
+#define JSON_ADD_NAME_FIXED_ARRAY_DEF(vname) \
+inline static int _json_add_name_ ## vname ## _fixed_array(struct json* const jctx, const char* name, size_t length, uint8_t const* const data, const size_t dlen) \
+{ \
+  int ret; \
+  size_t nelements = dlen / vname ## _element_length; \
+  size_t i; \
+  \
+  if((ret=tobb_reserve_for(&jctx->bb, length+nelements * (vname ## _value_maxlength(vname ## _element_length)+1 + 2)))) return ret; /* +1 for nelements-1  elements, +2 for [], +1 for possible "," at the end */ \
+  _json_add_name_unsafe(jctx, name, length); \
+  \
+  for(i=0; i < nelements; ++i) \
+  if((ret=vname ## _value_func(data + i * vname ## _element_length, vname ## _element_length, &jctx->bb)) < 0) return ret; \
+  return ret; \
 }
 
 inline static int _tobb_utf8_enc_unsafe(struct bytesbuf *bb, uint8_t const* const bytes, const size_t nbytes, const uint16_t char_mask)
@@ -70,7 +101,7 @@ inline static int _tobb_utf8_enc_unsafe(struct bytesbuf *bb, uint8_t const* cons
 
   if(ret < 0) return (int)ret;
   bb->size += ret;
-  return 0;
+  return ret;
 }
 
 inline static int string_value_func(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
@@ -78,9 +109,9 @@ inline static int string_value_func(uint8_t const* const data, const size_t dlen
   int ret;
   _tobb8_unsafe(bb, '\"');
 
-  if((ret=_tobb_utf8_enc_unsafe(bb, data, dlen, SC_ALL))) return ret;
+  if((ret=_tobb_utf8_enc_unsafe(bb, data, dlen, SC_ALL)) < 0) return ret;
   _tobb8_unsafe(bb, '\"');
-  return 0;
+  return ret+2;
 }
 
 #define string_value_maxlength(nbytes) ((nbytes)*6+2)
@@ -88,28 +119,13 @@ inline static int string_value_func(uint8_t const* const data, const size_t dlen
 JSON_ADD_VALUE_DEF(string);
 JSON_ADD_NAME_VALUE_DEF(string);
 
-inline static int alpha_string_value_func(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
-{
-  int ret;
-  _tobb8_unsafe(bb, '\"');
-
-  if((ret=_tobb_utf8_enc_unsafe(bb, data, dlen, SC_AA_MASK))) return ret;
-  _tobb8_unsafe(bb, '\"');
-  return 0;
-}
-
-#define alpha_string_value_maxlength(nbytes) ((nbytes)+2)
-
-JSON_ADD_VALUE_DEF(alpha_string);
-JSON_ADD_NAME_VALUE_DEF(alpha_string);
-
 inline static int hex_string_value_func(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
 {
   int ret;
   _tobb8_unsafe(bb, '\"');
   _tobb_hex_enc_unsafe(bb, data, dlen);
   _tobb8_unsafe(bb, '\"');
-  return 0;
+  return dlen*2+2;
 }
 
 #define hex_string_value_maxlength(nbytes) ((nbytes)*2+2)

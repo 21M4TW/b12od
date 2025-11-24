@@ -31,7 +31,7 @@ struct bolt12_object
 
 int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12);
 
-void free_bolt12_records(struct bolt12_object* const b12);
+void bolt12_free_records(struct bolt12_object* const b12);
 
 const char* bolt12_error(const int64_t error);
 

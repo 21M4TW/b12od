@@ -3,7 +3,7 @@
 
 #include<stdint.h>
 
-extern uint8_t _htable[16];
+extern const uint8_t _htable[16];
 
 inline static void hex8(const uint8_t value, char buf[2]){buf[0] = _htable[value>>4]; buf[1] = _htable[value&0xf];}
 

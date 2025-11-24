@@ -18,7 +18,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
   size_t i;
   int64_t error;
   struct bolt12_object* b12=(struct bolt12_object*)bolt12;
-  b12->nrecords = 0;
+  bolt12_free_records(b12);
 
   if((error = bech32_decode(string, &prefix, &data, &len)) != BECH32_OK) return (error>0? BOLT12_DECODE_BECH32_ERROR_BASE+error: error);
 
@@ -55,7 +55,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
     ++b12->nrecords;
 
     if(b12->nrecords > 1 && (b12->records)[b12->nrecords-1].type <= (b12->records)[b12->nrecords-2].type) {
-      free_bolt12_records(b12);
+      bolt12_free_records(b12);
       error = BOLT12_INVALID_TLV_ORDERING;
       goto bolt12_error_cleanup;
     }
@@ -68,7 +68,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
       if(error != BOLT12_UNKNOWN_TLV_TYPE || ((b12->records)[b12->nrecords-1].type%2) == 0) {
 
 	if(error > 0) error += BOLT12_DECODE_OBJECT_ERROR_BASE;
-	free_bolt12_records(b12);
+	bolt12_free_records(b12);
 	goto bolt12_error_cleanup;
       }
       --b12->nrecords;
@@ -79,7 +79,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
       b12->records = (struct tlv_record*)realloc(b12->records, narecords*sizeof(struct tlv_record));
 
       if(!b12->records) {
-        free_bolt12_records(b12);
+        bolt12_free_records(b12);
 	error = BOLT12_MEMORY_ALLOC_ISSUE;
 	goto bolt12_error_cleanup;
       }
@@ -87,7 +87,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
   }
 
   if(len > 0) {
-    free_bolt12_records(b12);
+    bolt12_free_records(b12);
     error = BOLT12_INVALID_TLV_RECORD;
     goto bolt12_error_cleanup;
   }
@@ -97,7 +97,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
   if(error != BOLT12_OK) {
 
     if(error > 0) error += BOLT12_DECODE_OBJECT_ERROR_BASE;
-    free_bolt12_records(b12);
+    bolt12_free_records(b12);
     goto bolt12_error_cleanup;
   }
 
@@ -111,12 +111,14 @@ bolt12_error_cleanup:
   return error;
 }
 
-void free_bolt12_records(struct bolt12_object* const b12)
+void bolt12_free_records(struct bolt12_object* const b12)
 {
   int i;
 
   for(i=0; i < b12->nrecords; ++i) free_tlv(b12->records+i);
   free(b12->records);
+  b12->records = NULL;
+  b12->nrecords = 0;
 }
 
 const char* bolt12_error(const int64_t error)

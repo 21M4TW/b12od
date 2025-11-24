@@ -70,7 +70,7 @@ inline static int tobb(struct bytesbuf* const bb, uint8_t const* const bytes, co
 {
   _TOBB_RESERVE_FOR_(nbytes);
   _tobb_unsafe(bb, bytes, nbytes);
-  return 0;
+  return nbytes;
 }
 
 #define _tobb8_unsafe(bb, value) {\
@@ -81,7 +81,7 @@ inline static int tobb8(struct bytesbuf* const bb, uint8_t value)
 {
   _TOBB_RESERVE_FOR_(1);
   _tobb8_unsafe(bb, value);
-  return 0;
+  return 1;
 }
 
 #define _tobb16_unsafe(bb, value) {\
@@ -93,7 +93,7 @@ inline static int tobb16(struct bytesbuf* const bb, uint16_t value)
 {
   _TOBB_RESERVE_FOR_(2);
   _tobb16_unsafe(bb, value);
-  return 0;
+  return 2;
 }
 
 #define _tobb32_unsafe(bb, value) {\
@@ -105,7 +105,7 @@ inline static int tobb32(struct bytesbuf* const bb, uint32_t value)
 {
   _TOBB_RESERVE_FOR_(4);
   _tobb32_unsafe(bb, value);
-  return 0;
+  return 4;
 }
 
 #define _tobb64_unsafe(bb, value) {\
@@ -117,7 +117,7 @@ inline static int tobb64(struct bytesbuf* const bb, uint64_t value)
 {
   _TOBB_RESERVE_FOR_(8);
   _tobb64_unsafe(bb, value);
-  return 0;
+  return 8;
 }
 
 #define _tobb_hex_enc_unsafe(bb, bytes, nbytes) {\
@@ -131,7 +131,7 @@ inline static int tobb_hex_enc(struct bytesbuf* const bb, uint8_t const* const b
 {
   _TOBB_RESERVE_FOR_(2*nbytes);
   _tobb_hex_enc_unsafe(bb, bytes, nbytes);
-  return 0;
+  return nbytes;
 }
 
 #define _tobb_trunc_hex_enc_unsafe(bb, bytes, nbytes) {\
@@ -150,8 +150,9 @@ inline static int tobb_hex_enc(struct bytesbuf* const bb, uint8_t const* const b
 inline static int tobb_trunc_hex_enc(struct bytesbuf* const bb, uint8_t const* const bytes, const size_t nbytes)
 {
   _TOBB_RESERVE_FOR_(2*nbytes);
+  const size_t init_size = bb->size;
   _tobb_trunc_hex_enc_unsafe(bb, bytes, nbytes);
-  return 0;
+  return bb->size - init_size;
 }
 
 #define tobb_str(bb, string) tobb(bb, string, strlen(string))

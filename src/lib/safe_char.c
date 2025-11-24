@@ -1,6 +1,6 @@
 #include "safe_char.h"
 
-uint16_t _ctable[256] = {
+const uint16_t _ctable[256] = {
   //0 0x0
   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACC,   SC_ACCE,   
   SC_ACCE,  SC_ASPE,  SC_ASPE,  SC_ASPE,  SC_ASPE,  SC_ASPE,  SC_ACC,   SC_ACC,  
