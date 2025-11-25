@@ -24,7 +24,8 @@ inline static int json_init(struct json* const jctx)
 inline static int json_error(struct json* const jctx, const int64_t error_code, const char* error_msg)
 {
   tobb_reserve(&jctx->bb, _JSON_BB_RESERVE);
-  int ret = sprintf((char*)jctx->bb.buf, "{\"code\":%"PRIi64",\"message\":\"%s\"}", error_code, error_msg);
+  int ret;
+  if((ret = sprintf((char*)jctx->bb.buf, "{\"code\":%"PRIi64",\"message\":\"%s\"}", error_code, error_msg)) < 0) return ret;
   return 0;
 }
 

@@ -4,16 +4,21 @@
 #include "bolt12_decode.h"
 #include "json_encode.h"
 
-struct bolt12_json_vector
+struct bolt12_json;
+
+// Important: Vector elements must be sorted
+struct bolt12_json_vector_element
 {
   bigsize type;
-  int (*enc_func)(struct json* jctx, struct tlv_record const* const tlv);
+  int (*enc_func)(struct bolt12_json* const jctx, struct tlv_record const* const tlv);
 };
 
 struct bolt12_json
 {
   bolt12_object_ptr b12;
   struct json jctx;
+  struct bolt12_json_vector_element const* vector;
+  size_t vector_length;
 };
 
 inline static int bolt12_json_init(struct bolt12_json* const b12j)
@@ -26,6 +31,8 @@ inline static int bolt12_json_init(struct bolt12_json* const b12j)
 #define bolt12_json_add_fixed_array_tlv(b12j, name, vname, tlv) json_add_name_fixed_array(&(b12j)->jctx, name, vname, (tlv)->value, (tlv)->length)
 
 #define bolt12_json_add_variable_array_tlv(b12j, name, vname, tlv) json_add_name_variable_array(&(b12j)->jctx, name, vname, (tlv)->value, (tlv)->length)
+
+int bolt12_json(struct bolt12_json* const b12j, const char* const bolt12_string);
 
 inline static int bolt12_json_error(struct bolt12_json* const b12j, const int64_t error_code){return json_error(&b12j->jctx, error_code, bolt12_error(error_code));}
 

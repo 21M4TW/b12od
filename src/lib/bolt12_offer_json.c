@@ -1,0 +1,34 @@
+#include "bolt12_offer_json.h"
+#include "bolt12_json_tlv.h"
+
+// Important: Vector elements must be sorted
+static struct bolt12_json_vector_element const _b12j_vector[] = {
+  {TYPE_OFFER_CHAINS, bolt12_json_add_offer_chains},
+  {TYPE_OFFER_METADATA, bolt12_json_add_offer_metadata},
+  {TYPE_OFFER_CURRENCY, bolt12_json_add_offer_currency},
+  {TYPE_OFFER_AMOUNT, bolt12_json_add_offer_amount},
+  {TYPE_OFFER_DESCRIPTION, bolt12_json_add_offer_description},
+  {TYPE_OFFER_FEATURES, bolt12_json_add_offer_features},
+  {TYPE_OFFER_ABSOLUTE_EXPIRY, bolt12_json_add_offer_absolute_expiry},
+  {TYPE_OFFER_PATHS, bolt12_json_add_offer_paths},
+  {TYPE_OFFER_ISSUER, bolt12_json_add_offer_issuer},
+  {TYPE_OFFER_QUANTITY_MAX, bolt12_json_add_offer_quantity_max},
+  {TYPE_OFFER_ISSUER_ID, bolt12_json_add_offer_issuer_id}
+};
+static const size_t _b12j_vector_length = sizeof(_b12j_vector) / sizeof(struct bolt12_json_vector_element);
+
+int bolt12_offer_json_init(struct bolt12_json* const b12j)
+{
+  b12j->b12 = malloc(sizeof(struct bolt12_offer));
+
+  if(!b12j->b12) return -1;
+  init_bolt12_offer(b12j->b12);
+  b12j->vector = _b12j_vector;
+  b12j->vector_length = _b12j_vector_length;
+  return bolt12_json_init(b12j);
+}
+
+int bolt12_offer_json(struct bolt12_json* const b12j, const char* const offer_string)
+{
+  return bolt12_json(b12j, offer_string);
+}
