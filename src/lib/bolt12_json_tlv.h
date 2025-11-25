@@ -6,43 +6,48 @@
 #include "bolt12_json.h"
 #include "bebuf.h"
 
-inline static int currency_string_value_func(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
+inline static int currency_string_value_func_noalloc(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
 {
+  //Returns the number of read bytes if no error
   int ret;
-  _tobb8_unsafe(bb, '\"');
+  _tobb8_noalloc(bb, '\"');
 
-  if((ret=_tobb_utf8_enc_unsafe(bb, data, dlen, SC_AA_MASK)) < 0) return ret;
+  if((ret=_tobb_utf8_enc_noalloc(bb, data, dlen, SC_AA_MASK)) < 0) return ret;
 
   if(ret != 3) return -2;
-  _tobb8_unsafe(bb, '\"');
-  return ret+2;
+  _tobb8_noalloc(bb, '\"');
+  return dlen;
 }
 
-#define currency_string_value_maxlength(nbytes) (nbytes+2)
+#define currency_string_value_maxlength(nbytes) (nbytes + 3) // includes + 1 for possible ','
 
-JSON_ADD_VALUE_DEF(currency_string);
 JSON_ADD_NAME_VALUE_DEF(currency_string);
 
-inline static int tu64_value_func(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
+inline static int tu64_value_func_noalloc(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
 {
+  //Returns the number of read bytes if no error
   int ret;
 
   //Trailing 0 is fine because json_add_ ## vname ## _value allocates an extra
   //character for possible "," separator
   if((ret=sprintf((char*)bb->buf, "%"PRIu64, betbuftoh64(data, dlen))) < 0) return ret;
-  return ret;
+  bb->size += ret;
+  return dlen;
 }
 
-#define tu64_value_maxlength(nbytes) (20)
+#define tu64_value_maxlength(nbytes) (20 + 1) // includes + 1 for possible ','
 
-JSON_ADD_VALUE_DEF(tu64);
 JSON_ADD_NAME_VALUE_DEF(tu64);
 
-#define hex_string_32B_value_func hex_string_value_func
+#define hex_string_32B_value_func_noalloc hex_string_value_func_noalloc
 #define hex_string_32B_element_length (CHAIN_HASH_LENGTH)
 #define hex_string_32B_value_maxlength hex_string_value_maxlength
 
 JSON_ADD_NAME_FIXED_ARRAY_DEF(hex_string_32B);
+
+int blinded_path_value_func(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb);
+
+JSON_ADD_NAME_VARIABLE_ARRAY_DEF(blinded_path);
 
 inline static int bolt12_json_add_offer_chains(struct bolt12_json* const b12j, struct tlv_record const* const tlv){return bolt12_json_add_fixed_array_tlv(b12j, "offer_chains", hex_string_32B, tlv);}
 
@@ -58,7 +63,7 @@ inline static int bolt12_json_add_offer_features(struct bolt12_json* const b12j,
 
 inline static int bolt12_json_add_offer_absolute_expiry(struct bolt12_json* const b12j, struct tlv_record const* const tlv){return bolt12_json_add_value_tlv(b12j, "offer_absolute_expiry", tu64, tlv);}
 
-int bolt12_json_add_offer_paths(struct bolt12_json* const b12j, struct tlv_record const* const tlv);
+inline static int bolt12_json_add_offer_paths(struct bolt12_json* const b12j, struct tlv_record const* const tlv){return bolt12_json_add_variable_array_tlv(b12j, "offer_paths", blinded_path, tlv);}
 
 inline static int bolt12_json_add_offer_issuer(struct bolt12_json* const b12j, struct tlv_record const* const tlv){return bolt12_json_add_value_tlv(b12j, "offer_issuer", string, tlv);}
 

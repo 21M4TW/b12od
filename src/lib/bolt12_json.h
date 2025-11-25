@@ -25,6 +25,8 @@ inline static int bolt12_json_init(struct bolt12_json* const b12j)
 
 #define bolt12_json_add_fixed_array_tlv(b12j, name, vname, tlv) json_add_name_fixed_array(&(b12j)->jctx, name, vname, (tlv)->value, (tlv)->length)
 
+#define bolt12_json_add_variable_array_tlv(b12j, name, vname, tlv) json_add_name_variable_array(&(b12j)->jctx, name, vname, (tlv)->value, (tlv)->length)
+
 inline static int bolt12_json_error(struct bolt12_json* const b12j, const int64_t error_code){return json_error(&b12j->jctx, error_code, bolt12_error(error_code));}
 
 inline static void bolt12_json_free(struct bolt12_json* const b12j){json_free(&b12j->jctx);}

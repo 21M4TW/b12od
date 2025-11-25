@@ -28,44 +28,21 @@ inline static int json_error(struct json* const jctx, const int64_t error_code, 
   return 0;
 }
 
-#define json_add_name(jctx, name) _json_add_name(jctx, "\""name"\":", strlen("\""name"\":"))
-#define _json_add_name_unsafe(jctx, name, length) {\
-  _tobb_unsafe(&jctx->bb, name, length); \
-}
-inline static int _json_add_name(struct json* const jctx, const char* name, size_t length)
-{
-  int ret;
+#define json_name_length(name) strlen("\""name"\":")
 
-  if((ret=tobb_reserve_for(&jctx->bb, length))) return ret;
-  _json_add_name_unsafe(jctx, name, length);
-  return 0;
+#define json_add_name_noalloc(name, bb) _json_add_name_noalloc("\""name"\":", strlen("\""name"\":"), bb)
+#define _json_add_name_noalloc(name, length, bb) {\
+  _tobb_noalloc(bb, name, length); \
 }
 
-#define json_add_value(jctx, vname, data, dlen) _json_add_ ## vname ## _value(jctx, data, dlen)
-#define JSON_ADD_VALUE_DEF(vname) \
-inline static int json_add_ ## vname ## _value(struct json* const jctx, uint8_t const* const data, const size_t dlen) \
-{ \
-  int ret; \
-  \
-  if((ret=tobb_reserve_for(&jctx->bb, vname ## _value_maxlength(dlen)+1))) return ret; /* +1 for possible "," that can occur */ \
-  if((ret=vname ## _value_func(data, dlen, &jctx->bb)) < 0) return ret; \
-  return ret; \
+#define json_add_name_value_noalloc(name, vname, data, dlen, bb) _json_add_name_value_noalloc("\""name"\":", strlen("\""name"\":"), vname, data, dlen, bb)
+#define _json_add_name_value_noalloc(name, length, vname, data, dlen, bb) {\
+  _json_add_name_noalloc(name, length, bb); \
+  if((ret=vname ## _value_func_noalloc(data, dlen, bb)) < 0) return ret; \
 }
 
-#define json_add_fixed_array(jctx, vname, data, dlen) _json_add_ ## vname ## _fixed_array(jctx, data, dlen)
-#define JSON_ADD_FIXED_ARRAY_DEF(vname) \
-inline static int json_add_ ## vname ## _fixed_array(struct json* const jctx, uint8_t const* const data, const size_t dlen) \
-{ \
-  int ret; \
-  size_t nelements = dlen / vname ## _element_length; \
-  size_t i; \
-  \
-  if((ret=tobb_reserve_for(&jctx->bb, nelements * (vname ## _value_maxlength(vname ## _element_length)+1 + 2)))) return ret; /* +1 for nelements-1  elements, +2 for [], +1 for possible "," at the end */ \
-  \
-  for(i=0; i < nelements; ++i) \
-    if((ret=vname ## _value_func(data + i * vname ## _element_length, vname ## _element_length, &jctx->bb)) < 0) return ret; \
-  return ret; \
-}
+#define json_name_value_maxlength(name, vname, dlen) _json_name_value_maxlength(strlen("\""name"\":"), vname, dlen)
+#define _json_name_value_maxlength(length, vname, dlen) (length + vname ## _value_maxlength(dlen))
 
 #define json_add_name_value(jctx, name, vname, data, dlen) _json_add_name_ ## vname ## _value(jctx, "\""name"\":", strlen("\""name"\":"), data, dlen)
 #define JSON_ADD_NAME_VALUE_DEF(vname) \
@@ -73,10 +50,9 @@ inline static int _json_add_name_ ## vname ## _value(struct json* const jctx, co
 { \
   int ret; \
   \
-  if((ret=tobb_reserve_for(&jctx->bb, length+vname ## _value_maxlength(dlen)+1))) return ret; /* +1 for possible "," that can occur */ \
-  _json_add_name_unsafe(jctx, name, length); \
-  if((ret=vname ## _value_func(data, dlen, &jctx->bb)) < 0) return ret; \
-  return length+ret; \
+  if((ret=tobb_reserve_for(&jctx->bb, _json_name_value_maxlength(length, vname, dlen)))) return ret; \
+  _json_add_name_value_noalloc(name, length, vname, data, dlen, &jctx->bb); \
+  return 0; \
 }
 
 #define json_add_name_fixed_array(jctx, name, vname, data, dlen) _json_add_name_ ## vname ## _fixed_array(jctx, "\""name"\":", strlen("\""name"\":"), data, dlen)
@@ -84,18 +60,58 @@ inline static int _json_add_name_ ## vname ## _value(struct json* const jctx, co
 inline static int _json_add_name_ ## vname ## _fixed_array(struct json* const jctx, const char* name, size_t length, uint8_t const* const data, const size_t dlen) \
 { \
   int ret; \
-  size_t nelements = dlen / vname ## _element_length; \
+  const size_t nelements = dlen / vname ## _element_length; \
   size_t i; \
   \
-  if((ret=tobb_reserve_for(&jctx->bb, length+nelements * (vname ## _value_maxlength(vname ## _element_length)+1 + 2)))) return ret; /* +1 for nelements-1  elements, +2 for [], +1 for possible "," at the end */ \
-  _json_add_name_unsafe(jctx, name, length); \
+  if((ret=tobb_reserve_for(&jctx->bb, length + nelements * vname ## _value_maxlength(vname ## _element_length) + 2))) return ret; /* +2 for '[' and ']' */ \
+  _json_add_name_noalloc(name, length, &jctx->bb); \
   \
-  for(i=0; i < nelements; ++i) \
-  if((ret=vname ## _value_func(data + i * vname ## _element_length, vname ## _element_length, &jctx->bb)) < 0) return ret; \
-  return ret; \
+  _tobb8_noalloc(&jctx->bb, '['); \
+  if(nelements > 0) {\
+    \
+    if((ret=vname ## _value_func_noalloc(data + i * vname ## _element_length, vname ## _element_length, &jctx->bb)) < 0) return ret; \
+    \
+    for(i=1; i < nelements; ++i) {\
+      \
+      _tobb8_noalloc(&jctx->bb, ','); \
+      \
+      if((ret=vname ## _value_func_noalloc(data + i * vname ## _element_length, vname ## _element_length, &jctx->bb)) < 0) return ret; \
+    } \
+  } \
+  _tobb8_noalloc(&jctx->bb, ']'); \
+  return 0; \
 }
 
-inline static int _tobb_utf8_enc_unsafe(struct bytesbuf *bb, uint8_t const* const bytes, const size_t nbytes, const uint16_t char_mask)
+#define json_add_name_variable_array(jctx, name, vname, data, dlen) _json_add_name_ ## vname ## _variable_array(jctx, "\""name"\":", strlen("\""name"\":"), data, dlen)
+#define JSON_ADD_NAME_VARIABLE_ARRAY_DEF(vname) \
+inline static int _json_add_name_ ## vname ## _variable_array(struct json* const jctx, const char* name, size_t length, uint8_t const* const data, const size_t dlen) \
+{ \
+  int ret; \
+  size_t wdlen = 0; \
+  \
+  if((ret=tobb_reserve_for(&jctx->bb, length+1))) return ret; /* +1 for "[" */ \
+  _json_add_name_noalloc(name, length, &jctx->bb); \
+  _tobb8_noalloc(&jctx->bb, '['); \
+  \
+  if(wdlen < dlen) {\
+    \
+    if((ret=vname ## _value_func(data + wdlen, dlen - wdlen, &jctx->bb)) < 0) return ret; /* vname ## _value_func must allocate for a possible extra "," */ \
+    wdlen += ret; \
+    \
+    while(wdlen < dlen) {\
+      _tobb8_noalloc(&jctx->bb, ','); \
+      \
+      if((ret=vname ## _value_func(data + wdlen, dlen - wdlen, &jctx->bb)) < 0) return ret; /* vname ## _value_func must allocate for a possible extra ',' */ \
+      wdlen += ret; \
+    } \
+  } \
+  \
+  if((ret=tobb_reserve_for(&jctx->bb, 2))) return ret; /* +1 for a possible extra ',' */ \
+  _tobb8_noalloc(&jctx->bb, ']'); \
+  return 0; \
+}
+
+inline static int _tobb_utf8_enc_noalloc(struct bytesbuf *bb, uint8_t const* const bytes, const size_t nbytes, const uint16_t char_mask)
 {
   ssize_t ret = read_utf8((const char*)bytes, nbytes, (char*)bb->buf + bb->size, bb->alloc - bb->size, char_mask);
 
@@ -104,33 +120,33 @@ inline static int _tobb_utf8_enc_unsafe(struct bytesbuf *bb, uint8_t const* cons
   return ret;
 }
 
-inline static int string_value_func(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
+inline static int string_value_func_noalloc(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
 {
+  //Returns the number of read bytes if no error
   int ret;
-  _tobb8_unsafe(bb, '\"');
+  _tobb8_noalloc(bb, '\"');
 
-  if((ret=_tobb_utf8_enc_unsafe(bb, data, dlen, SC_ALL)) < 0) return ret;
-  _tobb8_unsafe(bb, '\"');
-  return ret+2;
+  if((ret=_tobb_utf8_enc_noalloc(bb, data, dlen, SC_ALL)) < 0) return ret;
+  _tobb8_noalloc(bb, '\"');
+  return dlen;
 }
 
-#define string_value_maxlength(nbytes) ((nbytes)*6+2)
+#define string_value_maxlength(nbytes) ((nbytes)*6 + 3) // includes + 1 for possible ','
 
-JSON_ADD_VALUE_DEF(string);
 JSON_ADD_NAME_VALUE_DEF(string);
 
-inline static int hex_string_value_func(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
+inline static int hex_string_value_func_noalloc(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
 {
+  //Returns the number of read bytes if no error
   int ret;
-  _tobb8_unsafe(bb, '\"');
-  _tobb_hex_enc_unsafe(bb, data, dlen);
-  _tobb8_unsafe(bb, '\"');
-  return dlen*2+2;
+  _tobb8_noalloc(bb, '\"');
+  _tobb_hex_enc_noalloc(bb, data, dlen);
+  _tobb8_noalloc(bb, '\"');
+  return dlen;
 }
 
-#define hex_string_value_maxlength(nbytes) ((nbytes)*2+2)
+#define hex_string_value_maxlength(nbytes) ((nbytes)*2 + 3) // includes + 1 for possible ','
 
-JSON_ADD_VALUE_DEF(hex_string);
 JSON_ADD_NAME_VALUE_DEF(hex_string);
 
 inline static void json_free(struct json* const jctx){tobb_free(&jctx->bb);}

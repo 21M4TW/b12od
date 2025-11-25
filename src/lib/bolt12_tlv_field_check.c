@@ -2,7 +2,7 @@
 #include "bebuf.h"
 #include "bolt12_tlv_field_check.h"
 
-int check_offer_paths(struct tlv_record const* const record)
+int check_blinded_paths(struct tlv_record const* const record)
 {
   if(record->length < 2*EC_POINT_LENGTH + SCIDDIR_LENGTH + 3) return 0;
   byte nhops;
@@ -28,7 +28,7 @@ int check_offer_paths(struct tlv_record const* const record)
     }
 
     if(pos == record->length) return 1;
-    pos += 2*EC_POINT_LENGTH;
+    pos += (record->value[pos] < 2 ? SCIDDIR_LENGTH + EC_POINT_LENGTH : 2*EC_POINT_LENGTH);
   }
   return 0;
 }
