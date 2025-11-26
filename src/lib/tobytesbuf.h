@@ -158,7 +158,9 @@ inline static int tobb_trunc_hex_enc(struct bytesbuf* const bb, uint8_t const* c
 #define tobb_str(bb, string) tobb(bb, string, strlen(string))
 #define _tobb_str_noalloc(bb, string) _tobb_noalloc(bb, string, strlen(string))
 
-inline static void tobb_free(struct bytesbuf* const bb){free(bb->buf);}
+inline static void tobb_free(struct bytesbuf* const bb){if(bb->buf) {free(bb->buf); bb->buf = NULL; bb->alloc = 0; bb->size = 0;}}
+
+inline static void tobb_reset(struct bytesbuf* const bb){bb->size = 0;}
 
 inline static void tobb_shrink_to_fit(struct bytesbuf* const bb){bb->buf = (uint8_t*)realloc(bb->buf, bb->size); bb->alloc = bb->size;}
 

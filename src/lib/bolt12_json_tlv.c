@@ -59,8 +59,10 @@ int blinded_path_value_func(uint8_t const* const data, const size_t dlen, struct
   if((ret = sciddir_or_pubkey_enc_func_noalloc(dataptr, bb)) < 0) return ret;
   dataptr += ret;
   
+  _tobb8_noalloc(bb, ',');
   json_add_name_value_noalloc("first_path_key", hex_string, dataptr, EC_POINT_LENGTH, bb);
   dataptr += EC_POINT_LENGTH;
+  _tobb8_noalloc(bb, ',');
   json_add_name_noalloc("path", bb);
   _tobb8_noalloc(bb, '[');
   nhops = dataptr[0];
@@ -75,8 +77,9 @@ int blinded_path_value_func(uint8_t const* const data, const size_t dlen, struct
     if((ret = blinded_path_hop_value_func(dataptr, 0, bb)) < 0) return ret;
     dataptr += ret;
   }
-  if((ret=tobb_reserve_for(bb, 2))) return ret; /* '],' */
+  if((ret=tobb_reserve_for(bb, 3))) return ret; /* ']},' */
   _tobb8_noalloc(bb, ']');
+  _tobb8_noalloc(bb, '}');
 
   return (dataptr - data);
 }

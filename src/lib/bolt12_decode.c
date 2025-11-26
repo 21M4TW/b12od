@@ -71,6 +71,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
 	bolt12_free_records(b12);
 	goto bolt12_error_cleanup;
       }
+      //Do not include unknown records
       --b12->nrecords;
     }
 

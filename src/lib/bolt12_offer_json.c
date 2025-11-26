@@ -27,8 +27,3 @@ int bolt12_offer_json_init(struct bolt12_json* const b12j)
   b12j->vector_length = _b12j_vector_length;
   return bolt12_json_init(b12j);
 }
-
-int bolt12_offer_json(struct bolt12_json* const b12j, const char* const offer_string)
-{
-  return bolt12_json(b12j, offer_string);
-}

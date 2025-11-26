@@ -152,4 +152,8 @@ JSON_ADD_NAME_VALUE_DEF(hex_string);
 
 inline static void json_free(struct json* const jctx){tobb_free(&jctx->bb);}
 
+inline static void json_reset(struct json* const jctx){tobb_reset(&jctx->bb);}
+
+inline static void json_shrink_to_fit(struct json* const jctx){tobb_shrink_to_fit(&jctx->bb);}
+
 #endif
