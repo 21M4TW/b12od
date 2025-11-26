@@ -1,4 +1,3 @@
-#include "assert.h"
 #include "bolt12_offer_json.h"
 #include "bolt12_json_tlv.h"
 
@@ -43,19 +42,16 @@ size_t bolt12_json_find_type_enc_func(struct bolt12_json_vector_element const* c
   if(vector[0].type == type) return 0;
 
   size_t index = 1;
-  size_t delta = nelements - 2;
+  ssize_t delta = nelements - 2;
   size_t half_delta = delta>>1;
   size_t middle;
 
-  do {
+  while(delta > 0) {
     middle = index + half_delta;
 
     if(type > vector[middle].type) index = ++middle;
     delta = half_delta;
     half_delta = delta>>1;
-
-  } while(half_delta > 0);
-
-  assert(vector[index].type == type);
+  }
   return index;
 }

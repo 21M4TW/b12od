@@ -1,16 +1,21 @@
 #include <stdio.h>
 #include "bolt12_offer_json.h"
 
-int main()
+int main(const int nargs, const char* args[])
 {
-  const char* string="lno1pgx9getnwss8vetrw3hhyucs5ypjgef743p5fzqq9nqxh0ah7y87rzv3ud0eleps9kl2d5348hq2k8qzqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgqpqqqqqqqqqqqqqqqqqqqqqqqqqqqzqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqqzq3zyg3zyg3zygs";
   struct bolt12_json b12j;
   int ret;
   char const* json_string;
 
+  if(nargs != 2) {
+    fprintf(stderr, "Usage: %s offer_string\n", args[0]);
+    return 1;
+  }
+  const char* offer_string = args[1];
+
   bolt12_offer_json_init(&b12j);
 
-  ret = bolt12_offer_json(&b12j, string, &json_string);
+  ret = bolt12_offer_json(&b12j, offer_string, &json_string);
 
   if(ret) {
     fprintf(stderr, "Failed with error %i\n", ret);
