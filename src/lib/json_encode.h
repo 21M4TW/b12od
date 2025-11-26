@@ -114,11 +114,12 @@ inline static int _json_add_name_ ## vname ## _variable_array(struct json* const
 
 inline static int _tobb_utf8_enc_noalloc(struct bytesbuf *bb, uint8_t const* const bytes, const size_t nbytes, const uint16_t char_mask)
 {
-  ssize_t ret = read_utf8((const char*)bytes, nbytes, (char*)bb->buf + bb->size, bb->alloc - bb->size, char_mask);
+  size_t outlen;
+  int ret = read_utf8((const char*)bytes, nbytes, char_mask, (char*)bb->buf + bb->size, bb->alloc - bb->size, &outlen);
 
-  if(ret < 0) return (int)ret;
-  bb->size += ret;
-  return ret;
+  if(ret < 0) return ret;
+  bb->size += outlen;
+  return outlen;
 }
 
 inline static int string_value_func_noalloc(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)

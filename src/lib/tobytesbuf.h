@@ -2,6 +2,7 @@
 #define _TOBYTESBUF_
 
 #include<stdint.h> 
+#include<inttypes.h> 
 #include<stdlib.h> 
 #include<string.h> 
 #include<math.h> 
@@ -33,7 +34,7 @@ inline static int tobb_reserve(struct bytesbuf* const bb, const size_t alloc)
   if(alloc > bb->alloc) {
     bb->buf = (uint8_t*)realloc(bb->buf, alloc);
 
-    if(!bb->buf) return -1;
+    if(!bb->buf) return INT32_MIN;
     bb->alloc = alloc;
   }
   return 0;
@@ -51,7 +52,7 @@ inline static int tobb_reserve_for(struct bytesbuf* const bb, const size_t extra
     if(!bb->buf) {\
       bb->buf = (uint8_t*)realloc(bb->buf, needed_alloc); \
  \
-      if(!bb->buf) return -1; \
+      if(!bb->buf) return INT32_MIN; \
       bb->alloc = needed_alloc; \
  \
     } else bb->alloc = target_alloc; \

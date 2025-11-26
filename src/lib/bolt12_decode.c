@@ -4,6 +4,7 @@
 #include <math.h>
 #include "bolt12_decode.h"
 #include "tlv.h"
+#include "safe_char.h"
 #include "bech32_decode.h"
 
 #define RSCALING (1.25)
@@ -126,8 +127,19 @@ const char* bolt12_error(const int64_t error)
 {
   if(error < 0) {
 
-    if(error == -1) return "Bolt12 decoding: Memory allocation error";
-    return "Bolt12 decoding: Unknown negative error";
+    switch(error) {
+      case BOLT12_MEMORY_ALLOC_ISSUE:
+	return "Bolt12 decoding: Memory allocation error";
+
+      case SAFE_CHAR_EOF:
+	return "Bolt12 decoding: Reached end of string without decoding a valid character";
+
+      case SAFE_CHAR_INVALID_UTF8:
+	return "Bolt12 decoding: Invalid UTF-8 character";
+
+      default:
+	return "Bolt12 decoding: Unknown negative error";
+    }
   }
 
   if(error&BOLT12_DECODE_BECH32_ERROR_BASE) return bech32_error((int32_t)error);

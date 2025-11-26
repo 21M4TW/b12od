@@ -13,7 +13,11 @@ int main(const int nargs, const char* args[])
   }
   const char* offer_string = args[1];
 
-  bolt12_offer_json_init(&b12j);
+  ret = bolt12_offer_json_init(&b12j);
+
+  if(ret) {
+    fprintf(stderr, "Failed with error %i\n", ret);
+  }
 
   ret = bolt12_offer_json(&b12j, offer_string, &json_string);
 

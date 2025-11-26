@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include "bolt12_offer_json.h"
 #include "bolt12_json_tlv.h"
 
@@ -21,7 +22,7 @@ int bolt12_offer_json_init(struct bolt12_json* const b12j)
 {
   b12j->b12 = malloc(sizeof(struct bolt12_offer));
 
-  if(!b12j->b12) return -1;
+  if(!b12j->b12) return INT32_MIN;
   init_bolt12_offer(b12j->b12);
   b12j->vector = _b12j_vector;
   b12j->vector_length = _b12j_vector_length;
