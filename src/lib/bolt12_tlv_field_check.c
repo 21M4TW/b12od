@@ -9,7 +9,18 @@ int check_blinded_paths(struct tlv_record const* const record)
   byte h;
   u16 dlen;
   u16 d;
-  u64 pos = (record->value[0] < 2 ? SCIDDIR_LENGTH + EC_POINT_LENGTH : 2*EC_POINT_LENGTH);
+  u64 pos;
+ 
+  if(record->value[0] < 2) {
+
+    if(!check_ec_point_raw(record->value + SCIDDIR_LENGTH)) return 0;
+    pos = SCIDDIR_LENGTH + EC_POINT_LENGTH;
+
+  } else {
+
+    if(!check_ec_point_raw(record->value) || !check_ec_point_raw(record->value + EC_POINT_LENGTH)) return 0;
+    pos = 2*EC_POINT_LENGTH;
+  }
 
   while(pos + 1 < record->length) {
     nhops = record->value[pos];
@@ -18,10 +29,12 @@ int check_blinded_paths(struct tlv_record const* const record)
     ++pos;
 
     for(h=0; h<nhops; ++h) {
+
+      if(!check_ec_point_raw(record->value + pos)) return 0;
       pos += EC_POINT_LENGTH;
 
       if(record->length < pos + 2) return 0;
-      dlen = bebuf16toh(record->value+pos);
+      dlen = bebuf16toh(record->value + pos);
       pos += 2 + dlen;
 
       if(record->length < pos) return 0;

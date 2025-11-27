@@ -19,10 +19,10 @@ int main(const int nargs, const char* args[])
     fprintf(stderr, "Failed with error %i\n", ret);
   }
 
-  ret = bolt12_offer_json(&b12j, offer_string, &json_string);
+  json_string = bolt12_offer_json(&b12j, offer_string);
 
-  if(ret) {
-    fprintf(stderr, "Failed with error %i\n", ret);
+  if(!json_string) {
+    fprintf(stderr, "Failed unexpectedly\n");
   }
 
   printf("%s\n", json_string);

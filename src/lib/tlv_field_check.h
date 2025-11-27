@@ -12,7 +12,8 @@ inline static int check_channel_id(struct tlv_record const* const record){return
 inline static int check_sha256(struct tlv_record const* const record){return (record->length == SHA256_LENGTH);}
 inline static int check_signature(struct tlv_record const* const record){return (record->length == SIGNATURE_LENGTH);}
 inline static int check_bip340sig(struct tlv_record const* const record){return (record->length == BIP340SIG_LENGTH);}
-inline static int check_ec_point(struct tlv_record const* const record){return ((record->length == EC_POINT_LENGTH) && (record->value[0] == 0x02 || record->value[0] == 0x03));}
+inline static int check_ec_point_raw(byte const* const data){return (data[0] == 0x02 || data[0] == 0x03);}
+inline static int check_ec_point(struct tlv_record const* const record){return (record->length == EC_POINT_LENGTH && check_ec_point_raw(record->value));}
 inline static int check_short_channel_id(struct tlv_record const* const record){return (record->length == SHORT_CHANNEL_ID_LENGTH);}
 
 #endif

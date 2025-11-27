@@ -1,7 +1,7 @@
 #include "bolt12_offer_json.h"
 #include "bolt12_json_tlv.h"
 
-int bolt12_json(struct bolt12_json* const b12j, const char* const bolt12_string, char const** json_string)
+const char* bolt12_json(struct bolt12_json* const b12j, const char* const bolt12_string)
 {
   int64_t ret;
   size_t type_index = 0;
@@ -28,13 +28,11 @@ int bolt12_json(struct bolt12_json* const b12j, const char* const bolt12_string,
   _tobb8_noalloc(&b12j->jctx.bb, '}');
   if((ret = tobb8(&b12j->jctx.bb, 0)) < 0) goto json_error;
 
-  *json_string = (const char*)b12j->jctx.bb.buf;
-  return 0;
+  return (const char*)b12j->jctx.bb.buf;
 
 json_error:
   ret = bolt12_json_error(b12j, ret);
-  *json_string = (const char*)b12j->jctx.bb.buf;
-  return ret;
+  return (ret ? NULL: (const char*)b12j->jctx.bb.buf);
 }
 
 size_t bolt12_json_find_type_enc_func(struct bolt12_json_vector_element const* const vector, const size_t nelements, const bigsize type)

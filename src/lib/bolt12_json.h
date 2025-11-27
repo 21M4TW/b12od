@@ -29,7 +29,7 @@ inline static int bolt12_json_init(struct bolt12_json* const b12j){return json_i
 
 #define bolt12_json_add_variable_array_tlv(b12j, name, vname, tlv) json_add_name_variable_array(&(b12j)->jctx, name, vname, (tlv)->value, (tlv)->length)
 
-int bolt12_json(struct bolt12_json* const b12j, const char* const bolt12_string, char const** json_string);
+const char* bolt12_json(struct bolt12_json* const b12j, const char* const bolt12_string);
 
 inline static int bolt12_json_error(struct bolt12_json* const b12j, const int64_t error_code){return json_error(&b12j->jctx, error_code, bolt12_error(error_code));}
 
