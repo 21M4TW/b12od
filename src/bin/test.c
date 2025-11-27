@@ -17,15 +17,16 @@ int main(const int nargs, const char* args[])
 
   if(ret) {
     fprintf(stderr, "Failed with error %i\n", ret);
+
+  } else {
+    json_string = bolt12_offer_json(&b12j, offer_string);
+
+    if(!json_string) {
+      fprintf(stderr, "Failed unexpectedly\n");
+      ret = 2;
+
+    } else printf("%s\n", json_string);
   }
-
-  json_string = bolt12_offer_json(&b12j, offer_string);
-
-  if(!json_string) {
-    fprintf(stderr, "Failed unexpectedly\n");
-  }
-
-  printf("%s\n", json_string);
 
   bolt12_offer_json_free(&b12j);
   return (ret != 0);
