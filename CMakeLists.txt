@@ -49,12 +49,12 @@ file(GLOB_RECURSE EXE_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/bin/*.c"
 )
 
-add_executable(test ${EXE_SOURCES})
+add_executable(test_bolt12_offer ${EXE_SOURCES})
 
-target_include_directories(test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/lib)
-target_link_libraries(test PRIVATE bolt12_offer_decode)
+target_include_directories(test_bolt12_offer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/lib)
+target_link_libraries(test_bolt12_offer PRIVATE bolt12_offer_decode)
 
 # Optional: install the executable
-install(TARGETS test
+install(TARGETS test_bolt12_offer
     RUNTIME DESTINATION bin
 )
