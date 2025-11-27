@@ -11,19 +11,19 @@ uint8_t read_bigsize(uint8_t const* const buf, const size_t maxlength, uint64_t*
       *value = bebuf16toh(buf+1);
 
       if(*value < 0xfd) return 0;
-      return 2;
+      return 3;
     case 0xfe:
       if(maxlength < 5) return 0;
       *value = bebuf32toh(buf+1);
 
       if(*value < 0xffff) return 0;
-      return 4;
+      return 5;
     case 0xff:
       if(maxlength < 9) return 0;
       *value = bebuf64toh(buf+1);
 
       if(*value < 0xffffffff) return 0;
-      return 8;
+      return 9;
     default:
       *value = *buf;
       return 1;

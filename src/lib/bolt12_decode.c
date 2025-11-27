@@ -67,8 +67,6 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
 
       //Even unknown types cause a failure
       if(error != BOLT12_UNKNOWN_TLV_TYPE || ((b12->records)[b12->nrecords-1].type%2) == 0) {
-
-	if(error > 0) error += BOLT12_DECODE_OBJECT_ERROR_BASE;
 	bolt12_free_records(b12);
 	goto bolt12_error_cleanup;
       }
@@ -97,8 +95,6 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
   error = b12->record_processor(b12);
 
   if(error != BOLT12_OK) {
-
-    if(error > 0) error += BOLT12_DECODE_OBJECT_ERROR_BASE;
     bolt12_free_records(b12);
     goto bolt12_error_cleanup;
   }
@@ -169,15 +165,15 @@ const char* bolt12_error(const int64_t error)
     case TYPE_OFFER_CURRENCY:
       return "Bolt12 decoding: Invalid offer currency field";
     case TYPE_OFFER_AMOUNT:
-      return "Bolt12 decoding: Invalid offer amount field";
+      return "Bolt12 decoding: Invalid or missing offer amount field";
     case TYPE_OFFER_DESCRIPTION:
-      return "Bolt12 decoding: Invalid offer description field";
+      return "Bolt12 decoding: Invalid or missing offer description field";
     case TYPE_OFFER_FEATURES:
       return "Bolt12 decoding: Invalid offer features field";
     case TYPE_OFFER_ABSOLUTE_EXPIRY:
       return "Bolt12 decoding: Invalid offer absolute expiry field";
     case TYPE_OFFER_PATHS:
-      return "Bolt12 decoding: Invalid offer paths field";
+      return "Bolt12 decoding: Invalid or missing offer paths field";
     case TYPE_OFFER_ISSUER:
       return "Bolt12 decoding: Invalid offer issuer field";
     case TYPE_OFFER_QUANTITY_MAX:

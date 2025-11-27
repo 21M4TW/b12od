@@ -30,7 +30,7 @@ inline static int tu64_value_func_noalloc(uint8_t const* const data, const size_
 
   //Trailing 0 is fine because json_add_ ## vname ## _value allocates an extra
   //character for possible "," separator
-  if((ret=sprintf((char*)bb->buf, "%"PRIu64, betbuftoh64(data, dlen))) < 0) return ret;
+  if((ret=sprintf((char*)bb->buf + bb->size, "%"PRIu64, betbuftoh64(data, dlen))) < 0) return ret;
   bb->size += ret;
   return dlen;
 }

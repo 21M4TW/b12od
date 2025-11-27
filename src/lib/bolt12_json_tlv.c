@@ -9,7 +9,7 @@ inline static int sciddir_or_pubkey_enc_func_noalloc(uint8_t const* const data, 
   //SCIDDIR
   if(data[0] < 2) {
     sciddir = bebuf64toh(data + 1);
-    if((ret=sprintf((char*)bb->buf, "\"first_scid\":\"%"PRIu32"x%"PRIu32"x%"PRIu16"\",\"first_scid_dir\":%"PRIu8, (uint32_t)(sciddir>>40), (uint32_t)((sciddir>>16)&0xffffff), (uint16_t)(sciddir&0xffff), data[0])) < 0) return ret;
+    if((ret=sprintf((char*)bb->buf + bb->size, "\"first_scid\":\"%"PRIu32"x%"PRIu32"x%"PRIu16"\",\"first_scid_dir\":%"PRIu8, (uint32_t)(sciddir>>40), (uint32_t)((sciddir>>16)&0xffffff), (uint16_t)(sciddir&0xffff), data[0])) < 0) return ret;
     bb->size += ret;
     return SCIDDIR_LENGTH;
 
