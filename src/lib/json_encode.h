@@ -88,22 +88,22 @@ inline static int _json_add_name_ ## vname ## _fixed_array(struct json* const jc
 inline static int _json_add_name_ ## vname ## _variable_array(struct json* const jctx, const char* name, size_t length, uint8_t const* const data, const size_t dlen) \
 { \
   int ret; \
-  size_t wdlen = 0; \
+  size_t rdlen = 0; \
   \
   if((ret=tobb_reserve_for(&jctx->bb, length+1))) return ret; /* +1 for "[" */ \
   _json_add_name_noalloc(name, length, &jctx->bb); \
   _tobb8_noalloc(&jctx->bb, '['); \
   \
-  if(wdlen < dlen) {\
+  if(rdlen < dlen) {\
     \
-    if((ret=vname ## _value_func(data + wdlen, dlen - wdlen, &jctx->bb)) < 0) return ret; /* vname ## _value_func must allocate for a possible extra "," */ \
-    wdlen += ret; \
+    if((ret=vname ## _value_func(data + rdlen, dlen - rdlen, &jctx->bb)) < 0) return ret; /* vname ## _value_func must allocate for a possible extra "," */ \
+    rdlen += ret; \
     \
-    while(wdlen < dlen) {\
+    while(rdlen < dlen) {\
       _tobb8_noalloc(&jctx->bb, ','); \
       \
-      if((ret=vname ## _value_func(data + wdlen, dlen - wdlen, &jctx->bb)) < 0) return ret; /* vname ## _value_func must allocate for a possible extra ',' */ \
-      wdlen += ret; \
+      if((ret=vname ## _value_func(data + rdlen, dlen - rdlen, &jctx->bb)) < 0) return ret; /* vname ## _value_func must allocate for a possible extra ',' */ \
+      rdlen += ret; \
     } \
   } \
   \

@@ -29,21 +29,23 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
 
   if(pref_len != exp_pref_len) {
     error = BOLT12_INVALID_BECH32_PREFIX;
-    goto bolt12_error_cleanup;
+    goto bolt12_error_cleanup_with_data;
   }
 
   for(i=0; i < pref_len; ++i)
 
     if(tolower(prefix[i]) != tolower(b12->expected_prefix[i])) {
+      free(prefix);
       error = BOLT12_INVALID_BECH32_PREFIX;
-      goto bolt12_error_cleanup;
+      goto bolt12_error_cleanup_with_data;
     }
+  free(prefix);
 
   b12->records = (struct tlv_record*)malloc(narecords*sizeof(struct tlv_record));
 
   if(!b12->records) {
     error = BOLT12_MEMORY_ALLOC_ISSUE;
-    goto bolt12_error_cleanup;
+    goto bolt12_error_cleanup_with_data;
   }
 
   while(len > 0) {
@@ -58,7 +60,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
     if(b12->nrecords > 1 && (b12->records)[b12->nrecords-1].type <= (b12->records)[b12->nrecords-2].type) {
       bolt12_free_records(b12);
       error = BOLT12_INVALID_TLV_ORDERING;
-      goto bolt12_error_cleanup;
+      goto bolt12_error_cleanup_with_data;
     }
 
     error = b12->field_processor(b12);
@@ -68,7 +70,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
       //Even unknown types cause a failure
       if(error != BOLT12_UNKNOWN_TLV_TYPE || ((b12->records)[b12->nrecords-1].type%2) == 0) {
 	bolt12_free_records(b12);
-	goto bolt12_error_cleanup;
+	goto bolt12_error_cleanup_with_data;
       }
       //Do not include unknown records
       --b12->nrecords;
@@ -81,10 +83,11 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
       if(!b12->records) {
         bolt12_free_records(b12);
 	error = BOLT12_MEMORY_ALLOC_ISSUE;
-	goto bolt12_error_cleanup;
+	goto bolt12_error_cleanup_with_data;
       }
     }
   }
+  free(data);
 
   if(len > 0) {
     bolt12_free_records(b12);
@@ -102,9 +105,9 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
   if(b12->nrecords < narecords) b12->records = (struct tlv_record*)realloc(b12->records, b12->nrecords*sizeof(struct tlv_record));
   return BOLT12_OK;
 
-bolt12_error_cleanup:
-  free(prefix);
+bolt12_error_cleanup_with_data:
   free(data);
+bolt12_error_cleanup:
   b12->nrecords = 0;
   return error;
 }
