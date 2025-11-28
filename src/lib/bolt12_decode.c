@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <math.h>
+#include "math_utils.h"
 #include "bolt12_decode.h"
 #include "tlv.h"
 #include "safe_char.h"
@@ -76,7 +76,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
     }
 
     if(b12->nrecords == narecords) {
-      narecords = ceil(narecords*RSCALING);
+      narecords = ceil_u64(narecords*RSCALING);
       b12->records = (struct tlv_record*)realloc(b12->records, narecords * sizeof(struct tlv_record));
 
       if(!b12->records) {

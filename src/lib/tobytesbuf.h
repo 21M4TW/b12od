@@ -5,7 +5,7 @@
 #include<inttypes.h> 
 #include<stdlib.h> 
 #include<string.h> 
-#include<math.h> 
+#include "math_utils.h"
 #include "bebuf.h"
 #include "hex_enc.h"
 
@@ -46,7 +46,7 @@ inline static int tobb_reserve_for(struct bytesbuf* const bb, const size_t extra
   size_t needed_alloc = bb->size + (XTRA); \
  \
   if(needed_alloc > bb->alloc) { \
-    size_t target_alloc = ceil(needed_alloc * bb->grow_fact); \
+    size_t target_alloc = ceil_u64(needed_alloc * bb->grow_fact); \
     bb->buf = (uint8_t*)realloc(bb->buf, target_alloc); \
  \
     if(!bb->buf) {\

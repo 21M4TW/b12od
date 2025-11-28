@@ -1,9 +1,10 @@
 #include "bech32_decode.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <math.h>
+#include "math_utils.h"
 
 static uint8_t _rtable[256] = {
   //0
@@ -88,7 +89,7 @@ int bech32_decode(const char* bech32_string, char** prefix, uint8_t** data, size
     if(!*prefix) return BECH32_MEMORY_ALLOC_ISSUE;
   }
   ++i;
-  *len = ceil((tot_len - i)*0.625);
+  *len = ceil_u64((tot_len - i)*0.625);
   *data = (uint8_t*)malloc(*len);
 
   if(!*data) {
