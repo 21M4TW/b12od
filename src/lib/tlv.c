@@ -8,7 +8,7 @@ size_t read_tlv(byte const* buf, size_t maxlength, struct tlv_record* tlv)
   byte ret = read_bigsize(buf, maxlength, &tlv->type);
 
   if(!ret) return 0;
-  ret += read_bigsize(buf+ret, maxlength-ret, &tlv->length);
+  ret += read_bigsize(buf + ret, maxlength - ret, &tlv->length);
 
   if(maxlength-ret < tlv->length) return 0;
   tlv->value = (byte*)malloc(tlv->length);

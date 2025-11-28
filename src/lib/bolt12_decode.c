@@ -14,14 +14,14 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
   char* prefix;
   uint8_t *data, *off_data;
   size_t len;
-  size_t narecords=2;
+  size_t narecords = 2;
   size_t exp_pref_len, pref_len;
   size_t i;
   int64_t error;
   struct bolt12_object* b12=(struct bolt12_object*)bolt12;
   bolt12_free_records(b12);
 
-  if((error = bech32_decode(string, &prefix, &data, &len)) != BECH32_OK) return (error>0? BOLT12_DECODE_BECH32_ERROR_BASE+error: error);
+  if((error = bech32_decode(string, &prefix, &data, &len)) != BECH32_OK) return (error > 0? BOLT12_DECODE_BECH32_ERROR_BASE + error: error);
 
   off_data = data;
   exp_pref_len = strlen(b12->expected_prefix);
@@ -41,7 +41,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
     }
   free(prefix);
 
-  b12->records = (struct tlv_record*)malloc(narecords*sizeof(struct tlv_record));
+  b12->records = (struct tlv_record*)malloc(narecords * sizeof(struct tlv_record));
 
   if(!b12->records) {
     error = BOLT12_MEMORY_ALLOC_ISSUE;
@@ -49,7 +49,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
   }
 
   while(len > 0) {
-    i = read_tlv(off_data, len, (b12->records)+b12->nrecords);
+    i = read_tlv(off_data, len, b12->records + b12->nrecords);
 
     if(i==0) break;
     //printf("Field type %lu with length %lu\n", (b12->records)[b12->nrecords].type, (b12->records)[b12->nrecords].length);
@@ -57,7 +57,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
     off_data += i;
     ++b12->nrecords;
 
-    if(b12->nrecords > 1 && (b12->records)[b12->nrecords-1].type <= (b12->records)[b12->nrecords-2].type) {
+    if(b12->nrecords > 1 && (b12->records)[b12->nrecords - 1].type <= (b12->records)[b12->nrecords -2 ].type) {
       bolt12_free_records(b12);
       error = BOLT12_INVALID_TLV_ORDERING;
       goto bolt12_error_cleanup_with_data;
@@ -68,7 +68,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
     if(error != BOLT12_OK) {
 
       //Even unknown types cause a failure
-      if(error != BOLT12_UNKNOWN_TLV_TYPE || ((b12->records)[b12->nrecords-1].type%2) == 0) {
+      if(error != BOLT12_UNKNOWN_TLV_TYPE || ((b12->records)[b12->nrecords - 1].type%2) == 0) {
 	bolt12_free_records(b12);
 	goto bolt12_error_cleanup_with_data;
 
@@ -77,7 +77,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
 
     if(b12->nrecords == narecords) {
       narecords = ceil(narecords*RSCALING);
-      b12->records = (struct tlv_record*)realloc(b12->records, narecords*sizeof(struct tlv_record));
+      b12->records = (struct tlv_record*)realloc(b12->records, narecords * sizeof(struct tlv_record));
 
       if(!b12->records) {
         bolt12_free_records(b12);
@@ -101,7 +101,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
     goto bolt12_error_cleanup;
   }
 
-  if(b12->nrecords < narecords) b12->records = (struct tlv_record*)realloc(b12->records, b12->nrecords*sizeof(struct tlv_record));
+  if(b12->nrecords < narecords) b12->records = (struct tlv_record*)realloc(b12->records, b12->nrecords * sizeof(struct tlv_record));
   return BOLT12_OK;
 
 bolt12_error_cleanup_with_data:
@@ -115,7 +115,7 @@ void bolt12_free_records(struct bolt12_object* const b12)
 {
   int i;
 
-  for(i=0; i < b12->nrecords; ++i) free_tlv(b12->records+i);
+  for(i = 0; i < b12->nrecords; ++i) free_tlv(b12->records + i);
   free(b12->records);
   b12->records = NULL;
   b12->nrecords = 0;
