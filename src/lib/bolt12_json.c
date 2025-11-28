@@ -38,7 +38,8 @@ json_error:
 size_t bolt12_json_find_type_enc_func(struct bolt12_json_vector_element const* const vector, const size_t nelements, const bigsize type)
 {
   if(vector[0].type == type) return 0;
-  if(vector[nelements - 1].type < type) return nelements;
+
+  if(vector[0].type > type || vector[nelements - 1].type < type) return nelements;
 
   size_t index = 1;
   ssize_t delta = nelements - 2;
