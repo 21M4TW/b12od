@@ -70,7 +70,7 @@ inline static int _json_add_name_ ## vname ## _fixed_array(struct json* const jc
   _tobb8_noalloc(&jctx->bb, '['); \
   if(nelements > 0) {\
     \
-    if((ret=vname ## _value_func_noalloc(data + i * vname ## _element_length, vname ## _element_length, &jctx->bb)) < 0) return ret; \
+    if((ret=vname ## _value_func_noalloc(data, vname ## _element_length, &jctx->bb)) < 0) return ret; \
     \
     for(i=1; i < nelements; ++i) {\
       \
