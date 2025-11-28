@@ -35,7 +35,8 @@ inline static int tu64_value_func_noalloc(uint8_t const* const data, const size_
   return dlen;
 }
 
-#define tu64_value_maxlength(nbytes) (20 + 1) // includes + 1 for possible ','
+#define u64_value_maxlength(nbytes) (20 + 1) // includes + 1 for possible ','
+#define tu64_value_maxlength u64_value_maxlength
 
 JSON_ADD_NAME_VALUE_DEF(tu64);
 
@@ -70,5 +71,16 @@ inline static int bolt12_json_add_offer_issuer(struct bolt12_json* const b12j, s
 inline static int bolt12_json_add_offer_quantity_max(struct bolt12_json* const b12j, struct tlv_record const* const tlv){return bolt12_json_add_value_tlv(b12j, "offer_quantity_max", tu64, tlv);}
 
 inline static int bolt12_json_add_offer_issuer_id(struct bolt12_json* const b12j, struct tlv_record const* const tlv){return bolt12_json_add_value_tlv(b12j, "offer_issuer_id", hex_string, tlv);}
+
+inline static int bolt12_json_add_unknown_tlv_field(struct bolt12_json* const b12j, struct tlv_record const* const tlv)
+{
+  int ret;
+  if((ret=tobb_reserve_for(&b12j->jctx.bb, 2 + u64_value_maxlength(ERROR) + hex_string_value_maxlength(tlv->length)))) return ret; // (Both u64_value_maxlength and hex_string_value_maxlength include one extra byte)
+
+  if((ret = sprintf((char*)b12j->jctx.bb.buf + b12j->jctx.bb.size, "\"%"PRIu64"\":", tlv->type)) < 0) return ret;
+  b12j->jctx.bb.size += ret;
+  hex_string_value_func_noalloc(tlv->value, tlv->length, &b12j->jctx.bb);
+  return 0;
+}
 
 #endif

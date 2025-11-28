@@ -14,9 +14,10 @@ static struct bolt12_json_vector_element const _b12j_vector[] = {
   {TYPE_OFFER_PATHS, bolt12_json_add_offer_paths},
   {TYPE_OFFER_ISSUER, bolt12_json_add_offer_issuer},
   {TYPE_OFFER_QUANTITY_MAX, bolt12_json_add_offer_quantity_max},
-  {TYPE_OFFER_ISSUER_ID, bolt12_json_add_offer_issuer_id}
+  {TYPE_OFFER_ISSUER_ID, bolt12_json_add_offer_issuer_id},
+  {0, bolt12_json_add_unknown_tlv_field}
 };
-static const size_t _b12j_vector_length = sizeof(_b12j_vector) / sizeof(struct bolt12_json_vector_element);
+static const size_t _b12j_vector_length = sizeof(_b12j_vector) / sizeof(struct bolt12_json_vector_element) - 1;
 
 int bolt12_offer_json_init(struct bolt12_json* const b12j)
 {

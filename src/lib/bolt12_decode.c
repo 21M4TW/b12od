@@ -71,9 +71,8 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
       if(error != BOLT12_UNKNOWN_TLV_TYPE || ((b12->records)[b12->nrecords-1].type%2) == 0) {
 	bolt12_free_records(b12);
 	goto bolt12_error_cleanup_with_data;
+
       }
-      //Do not include unknown records
-      --b12->nrecords;
     }
 
     if(b12->nrecords == narecords) {
