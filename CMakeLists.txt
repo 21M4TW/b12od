@@ -13,6 +13,8 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
 
 add_library(bolt12_offer_decode ${SOURCES})
 
+target_link_libraries(bolt12_offer_decode m)
+
 target_include_directories(bolt12_offer_decode
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/lib>
