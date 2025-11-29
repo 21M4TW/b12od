@@ -4,6 +4,7 @@ fn main() {
 
     // Run CMake to build the C library
     let dst = cmake::Config::new("..")
+        .out_dir("..")
         .build_target("bolt12_offer_decode")
         .build();
 

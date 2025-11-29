@@ -7,7 +7,7 @@ from Cython.Build import cythonize
 class CMakeBuildExt(build_ext):
     def run(self):
         # Run CMake to build the C library
-        build_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "build_c"))
+        build_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../build"))
         os.makedirs(build_dir, exist_ok=True)
         source_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
         subprocess.check_call(["cmake", source_dir], cwd=build_dir)
@@ -15,7 +15,7 @@ class CMakeBuildExt(build_ext):
         super().run()
 
     def build_extensions(self):
-        lib_path = os.path.join(os.path.dirname(__file__), "build_c/libbolt12_offer_decode_pic.a")
+        lib_path = os.path.join(os.path.dirname(__file__), "../build/libbolt12_offer_decode_pic.a")
         for ext in self.extensions:
           ext.extra_objects = [lib_path]   # link the static archive directly
           ext.include_dirs.append("..")
