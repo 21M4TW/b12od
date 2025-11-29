@@ -11,7 +11,7 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.c"
 )
 
-add_library(bolt12_offer_decode ${SOURCES})
+add_library(bolt12_offer_decode STATIC ${SOURCES})
 
 target_include_directories(bolt12_offer_decode
     PUBLIC

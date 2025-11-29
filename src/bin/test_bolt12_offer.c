@@ -3,8 +3,8 @@
 
 int main(const int nargs, const char* args[])
 {
-  struct bolt12_json b12j;
-  int ret;
+  struct bolt12_json* b12j;
+  int ret=0;
   char const* json_string;
 
   if(nargs != 2) {
@@ -13,21 +13,21 @@ int main(const int nargs, const char* args[])
   }
   const char* offer_string = args[1];
 
-  ret = bolt12_offer_json_init(&b12j);
+  b12j = bolt12_offer_json_new();
 
-  if(ret) {
-    fprintf(stderr, "Failed with error %i\n", ret);
+  if(!b12j) {
+    fprintf(stderr, "Failed initializing\n");
 
   } else {
-    json_string = bolt12_offer_json(&b12j, offer_string);
+    json_string = bolt12_offer_json(b12j, offer_string);
 
     if(!json_string) {
       fprintf(stderr, "Failed unexpectedly\n");
-      ret = 2;
+      ret = 1;
 
     } else printf("%s\n", json_string);
   }
 
-  bolt12_offer_json_free(&b12j);
+  bolt12_offer_json_delete(b12j);
   return (ret != 0);
 }

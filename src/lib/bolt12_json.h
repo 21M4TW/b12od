@@ -21,7 +21,18 @@ struct bolt12_json
   size_t vector_length;
 };
 
-inline static int bolt12_json_init(struct bolt12_json* const b12j){return json_init(&b12j->jctx);}
+inline static struct bolt12_json* bolt12_json_new()
+{
+  struct bolt12_json* const b12j = (struct bolt12_json*)malloc(sizeof(struct bolt12_json));
+
+  if(!b12j) return NULL;
+
+  if(json_init(&b12j->jctx)) {
+    free(b12j);
+    return NULL;
+  }
+  return b12j;
+}
 
 #define bolt12_json_add_value_tlv(b12j, name, vname, tlv) json_add_name_value(&(b12j)->jctx, name, vname, (tlv)->value, (tlv)->length)
 
@@ -33,7 +44,7 @@ const char* bolt12_json(struct bolt12_json* const b12j, const char* const bolt12
 
 inline static int bolt12_json_error(struct bolt12_json* const b12j, const int64_t error_code){return json_error(&b12j->jctx, error_code, bolt12_error(error_code));}
 
-inline static void bolt12_json_free(struct bolt12_json* const b12j){json_free(&b12j->jctx);}
+inline static void bolt12_json_delete(struct bolt12_json* const b12j){json_free(&b12j->jctx); free(b12j);}
 
 inline static void bolt12_json_reset(struct bolt12_json* const b12j){json_reset(&b12j->jctx);}
 

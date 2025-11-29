@@ -19,13 +19,26 @@ static struct bolt12_json_vector_element const _b12j_vector[] = {
 };
 static const size_t _b12j_vector_length = sizeof(_b12j_vector) / sizeof(struct bolt12_json_vector_element) - 1;
 
-int bolt12_offer_json_init(struct bolt12_json* const b12j)
+struct bolt12_json* bolt12_offer_json_new()
 {
+  struct bolt12_json* const b12j = bolt12_json_new();
+
+  if(!b12j) return NULL;
   b12j->b12 = malloc(sizeof(struct bolt12_offer));
 
-  if(!b12j->b12) return INT32_MIN;
+  if(!b12j->b12) {
+    bolt12_json_delete(b12j);
+    return NULL;
+  }
   init_bolt12_offer(b12j->b12);
   b12j->vector = _b12j_vector;
   b12j->vector_length = _b12j_vector_length;
-  return bolt12_json_init(b12j);
+  return b12j;
+}
+
+void bolt12_offer_json_delete(struct bolt12_json* const b12j)
+{
+  bolt12_free_records(b12j->b12);
+  free(b12j->b12);
+  bolt12_json_delete(b12j);
 }
