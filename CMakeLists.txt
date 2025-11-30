@@ -6,6 +6,8 @@ include(CTest)
 
 option(BUILD_SHARED_LIBS "Build shared libraries instead of static ones" OFF)
 
+add_compile_options(-O3 -march=native -Wall)
+
 # Automatically collect sources
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.c"

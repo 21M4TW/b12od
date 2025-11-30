@@ -8,7 +8,6 @@ int check_blinded_paths(struct tlv_record const* const record)
   byte nhops;
   byte h;
   u16 dlen;
-  u16 d;
   u64 pos;
  
   if(record->value[0] < 2) {

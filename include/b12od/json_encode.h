@@ -7,7 +7,11 @@
 #include <b12od/safe_char.h>
 #include <b12od/tobytesbuf.h>
 
-#define _JSON_BB_GROW_FACT (1.25)
+#ifndef _MINIMUM_ALLOC_TESTING_
+  #define _JSON_BB_GROW_FACT (1.25)
+#else
+  #define _JSON_BB_GROW_FACT (1)
+#endif
 #define _JSON_BB_RESERVE (256) //Must be sufficient for any JSON error message
 
 struct json
@@ -19,7 +23,7 @@ inline static int json_init(struct json* const jctx)
 {
   tobb_init(&jctx->bb);
   tobb_grow_fact(&jctx->bb, _JSON_BB_GROW_FACT);
-  return tobb_reserve(&jctx->bb, _JSON_BB_RESERVE);
+  return 0;
 }
 
 inline static int json_error(struct json* const jctx, const int64_t error_code, const char* error_msg)
@@ -141,7 +145,6 @@ JSON_ADD_NAME_VALUE_DEF(string);
 inline static int hex_string_value_func_noalloc(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
 {
   //Returns the number of read bytes if no error
-  int ret;
   _tobb8_noalloc(bb, '\"');
   _tobb_hex_enc_noalloc(bb, data, dlen);
   _tobb8_noalloc(bb, '\"');

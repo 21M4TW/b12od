@@ -8,7 +8,11 @@
 #include <b12od/safe_char.h>
 #include <b12od/bech32_decode.h>
 
-#define RSCALING (1.25)
+#ifndef _MINIMUM_ALLOC_TESTING_
+  #define RSCALING (1.25)
+#else
+  #define RSCALING (1)
+#endif
 
 int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
 {
