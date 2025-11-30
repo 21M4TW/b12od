@@ -44,7 +44,7 @@ inline static int json_error(struct json* const jctx, const int64_t error_code, 
 }
 
 #define json_name_value_maxlength(name, vname, dlen) _json_name_value_maxlength(strlen("\""name"\":"), vname, dlen)
-#define _json_name_value_maxlength(length, vname, dlen) (length + vname ## _value_maxlength(dlen))
+#define _json_name_value_maxlength(length, vname, dlen) ((length) + vname ## _value_maxlength(dlen))
 
 #define json_add_name_value(jctx, name, vname, data, dlen) _json_add_name_ ## vname ## _value(jctx, "\""name"\":", strlen("\""name"\":"), data, dlen)
 #define JSON_ADD_NAME_VALUE_DEF(vname) \

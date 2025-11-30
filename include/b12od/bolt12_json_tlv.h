@@ -20,7 +20,7 @@ inline static int currency_string_value_func_noalloc(uint8_t const* const data, 
   return dlen;
 }
 
-#define currency_string_value_maxlength(nbytes) (nbytes + 3) // includes + 1 for possible ','
+#define currency_string_value_maxlength(nbytes) ((nbytes) + 3) // includes + 1 for possible ','
 
 JSON_ADD_NAME_VALUE_DEF(currency_string);
 
