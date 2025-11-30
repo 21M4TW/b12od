@@ -65,13 +65,19 @@ file(GLOB_RECURSE EXE_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/bin/*.c"
 )
 
-add_executable(test_bolt12_offer ${EXE_SOURCES})
-add_test(test_bolt12_offer test_bolt12_offer lno1qfqpge38tqmzyrdjj3x2qkdr5y80dlfw56ztq6yd9sme995g3gsxqqm0u2xq4dh3kdevrf4zg6hx8a60jv0gxe0ptgyfc6xkryqqqqqqqq9qc4r9wd6zqan9vd6x7unnzcss9mk8y3wkklfvevcrszlmu23kfrxh49px20665dqwmn4p72pksese)
+add_executable(b12od_exe ${EXE_SOURCES})
+target_include_directories(b12od_exe PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(b12od_exe PRIVATE b12od)
+set_target_properties(b12od_exe PROPERTIES OUTPUT_NAME "b12od")
 
-target_include_directories(test_bolt12_offer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/lib)
-target_link_libraries(test_bolt12_offer PRIVATE b12od)
+add_executable(b12od_test ${SOURCES} ${EXE_SOURCES})
+target_include_directories(b12od_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_options(b12od_test PRIVATE -D_MINIMUM_ALLOC_TESTING_)
+
+add_test(NAME memory_single COMMAND valgrind --tool=memcheck $<TARGET_FILE:b12od_test> lno1qfqpge38tqmzyrdjj3x2qkdr5y80dlfw56ztq6yd9sme995g3gsxqqm0u2xq4dh3kdevrf4zg6hx8a60jv0gxe0ptgyfc6xkryqqqqqqqq9qc4r9wd6zqan9vd6x7unnzcss9mk8y3wkklfvevcrszlmu23kfrxh49px20665dqwmn4p72pksese)
+add_test(NAME decode_single COMMAND $<TARGET_FILE:b12od_exe> lno1qfqpge38tqmzyrdjj3x2qkdr5y80dlfw56ztq6yd9sme995g3gsxqqm0u2xq4dh3kdevrf4zg6hx8a60jv0gxe0ptgyfc6xkryqqqqqqqq9qc4r9wd6zqan9vd6x7unnzcss9mk8y3wkklfvevcrszlmu23kfrxh49px20665dqwmn4p72pksese)
 
 # Optional: install the executable
-install(TARGETS test_bolt12_offer
+install(TARGETS b12od
     RUNTIME DESTINATION bin
 )
