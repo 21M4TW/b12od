@@ -11,11 +11,11 @@ class CMakeBuildExt(build_ext):
         os.makedirs(build_dir, exist_ok=True)
         source_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
         subprocess.check_call(["cmake", source_dir], cwd=build_dir)
-        subprocess.check_call(["cmake", "--build", ".", "--target", "bolt12_offer_decode_pic"], cwd=build_dir)
+        subprocess.check_call(["cmake", "--build", ".", "--target", "b12od_pic"], cwd=build_dir)
         super().run()
 
     def build_extensions(self):
-        lib_path = os.path.join(os.path.dirname(__file__), "../build/libbolt12_offer_decode_pic.a")
+        lib_path = os.path.join(os.path.dirname(__file__), "../build/libb12od_pic.a")
         for ext in self.extensions:
           ext.extra_objects = [lib_path]   # link the static archive directly
           ext.include_dirs.append("..")
@@ -23,22 +23,22 @@ class CMakeBuildExt(build_ext):
 
 extensions = cythonize([
     Extension(
-        "bolt12_offer_decode.bolt12_offer_decode",
-        sources=["bolt12_offer_decode/bolt12_offer_decode.pyx"],
+        "b12od.b12od",
+        sources=["b12od/b12od.pyx"],
         include_dirs=["../src/lib"],   # so Cython sees bolt12_offer_decode.h
         language="c"
     )
 ])
 
 setup(
-    name="bolt12_offer_decode",
+    name="b12od",
     version="0.1.0",
-    description="Python bindings for bolt12_offer_decode C library",
+    description="Python bindings for b12od C library",
     author="21M4TW",
     author_email="21M4TW@proton.me",
-    url="https://github.com/21M4TW/bolt12_offer_decode",
+    url="https://github.com/21M4TW/b12od",
     ext_modules=extensions,
     cmdclass={"build_ext": CMakeBuildExt},
-    packages=["bolt12_offer_decode"],
+    packages=["b12od"],
     zip_safe=False,
 )

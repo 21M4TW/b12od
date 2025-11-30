@@ -11,46 +11,46 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.c"
 )
 
-add_library(bolt12_offer_decode STATIC ${SOURCES})
-target_include_directories(bolt12_offer_decode
+add_library(b12od STATIC ${SOURCES})
+target_include_directories(b12od
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/lib>
         $<INSTALL_INTERFACE:include>
 )
 
-add_library(bolt12_offer_decode_obj_pic OBJECT ${SOURCES})
-set_target_properties(bolt12_offer_decode_obj_pic PROPERTIES POSITION_INDEPENDENT_CODE ON)
+add_library(b12od_obj_pic OBJECT ${SOURCES})
+set_target_properties(b12od_obj_pic PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-add_library(bolt12_offer_decode_pic STATIC $<TARGET_OBJECTS:bolt12_offer_decode_obj_pic>)
-target_include_directories(bolt12_offer_decode_pic
+add_library(b12od_pic STATIC $<TARGET_OBJECTS:b12od_obj_pic>)
+target_include_directories(b12od_pic
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/lib>
         $<INSTALL_INTERFACE:include>
 )
 
-add_library(bolt12_offer_decode_shared SHARED $<TARGET_OBJECTS:bolt12_offer_decode_obj_pic>)
-target_include_directories(bolt12_offer_decode_shared
+add_library(b12od_shared SHARED $<TARGET_OBJECTS:b12od_obj_pic>)
+target_include_directories(b12od_shared
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/lib>
         $<INSTALL_INTERFACE:include>
 )
-set_target_properties(bolt12_offer_decode_shared PROPERTIES OUTPUT_NAME "bolt12_offer_decode")
+set_target_properties(b12od_shared PROPERTIES OUTPUT_NAME "b12od")
 
 install(FILES
-    DESTINATION lib/cmake/bolt12_offer_decode
-    RENAME bolt12_offer_decodeConfig.cmake
+    DESTINATION lib/cmake/b12od
+    RENAME b12odConfig.cmake
 )
 
 install(
-    TARGETS bolt12_offer_decode
-    EXPORT bolt12_offer_decodeTargets
+    TARGETS b12od
+    EXPORT b12odTargets
 )
 
 install(
-    EXPORT bolt12_offer_decodeTargets
-    FILE bolt12_offer_decodeTargets.cmake
-    NAMESPACE bolt12_offer_decode::
-    DESTINATION lib/cmake/bolt12_offer_decode
+    EXPORT b12odTargets
+    FILE b12odTargets.cmake
+    NAMESPACE b12od::
+    DESTINATION lib/cmake/b12od
 )
 
 file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.h")
@@ -65,7 +65,7 @@ add_executable(test_bolt12_offer ${EXE_SOURCES})
 add_test(test_bolt12_offer test_bolt12_offer lno1qfqpge38tqmzyrdjj3x2qkdr5y80dlfw56ztq6yd9sme995g3gsxqqm0u2xq4dh3kdevrf4zg6hx8a60jv0gxe0ptgyfc6xkryqqqqqqqq9qc4r9wd6zqan9vd6x7unnzcss9mk8y3wkklfvevcrszlmu23kfrxh49px20665dqwmn4p72pksese)
 
 target_include_directories(test_bolt12_offer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/lib)
-target_link_libraries(test_bolt12_offer PRIVATE bolt12_offer_decode)
+target_link_libraries(test_bolt12_offer PRIVATE b12od)
 
 # Optional: install the executable
 install(TARGETS test_bolt12_offer

@@ -1,4 +1,4 @@
-use bolt12_offer_decode::OfferDecoder;
+use b12od::OfferDecoder;
 
 fn main() {
     let offer_decoder = OfferDecoder::new();

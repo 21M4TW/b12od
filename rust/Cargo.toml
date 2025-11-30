@@ -1,5 +1,5 @@
 [package]
-name = "bolt12_offer_decode"
+name = "b12od"
 version = "0.1.0"
 edition = "2024"
 
