@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "bolt12_offer_json.h"
+
+#include <b12od/bolt12_offer_json.h>
 
 int main(const int nargs, const char* args[])
 {

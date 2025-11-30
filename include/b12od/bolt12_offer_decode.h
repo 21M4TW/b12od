@@ -2,8 +2,9 @@
 #define _BOLT12_OFFER_DECODE_
 
 #include <string.h>
-#include "bolt12_decode.h"
-#include "bolt12_types.h"
+
+#include <b12od/bolt12_decode.h>
+#include <b12od/bolt12_types.h>
 
 struct bolt12_offer
 {

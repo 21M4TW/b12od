@@ -1,8 +1,8 @@
 #ifndef _BOLT12_JSON_
 #define _BOLT12_JSON_
 
-#include "bolt12_decode.h"
-#include "json_encode.h"
+#include <b12od/bolt12_decode.h>
+#include <b12od/json_encode.h>
 
 struct bolt12_json;
 

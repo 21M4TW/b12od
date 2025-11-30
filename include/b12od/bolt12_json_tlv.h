@@ -3,8 +3,9 @@
 
 #include <stdio.h>
 #include <inttypes.h>
-#include "bolt12_json.h"
-#include "bebuf.h"
+
+#include <b12od/bolt12_json.h>
+#include <b12od/bebuf.h>
 
 inline static int currency_string_value_func_noalloc(uint8_t const* const data, const size_t dlen, struct bytesbuf *bb)
 {

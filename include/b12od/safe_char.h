@@ -4,7 +4,8 @@
 #include<stdint.h>
 #include<stdlib.h>
 #include<stdio.h>
-#include "hex_enc.h"
+
+#include <b12od/hex_enc.h>
 
 //Basic flags
 #define SC_AAUP	 (1)

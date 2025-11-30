@@ -1,8 +1,8 @@
 #ifndef _TLV_FIELD_CHECK_
 #define _TLV_FIELD_CHECK_
 
-#include "bolt12_types.h"
-#include "tlv.h"
+#include <b12od/bolt12_types.h>
+#include <b12od/tlv.h>
 
 inline static int check_u64(struct tlv_record const* const record){return (record->length == sizeof(u64));}
 inline static int check_tu64(struct tlv_record const* const record){return (record->length <= sizeof(u64) && (record->length == 0 || record->value[0] != 0));}

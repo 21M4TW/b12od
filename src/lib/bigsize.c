@@ -1,5 +1,5 @@
-#include "bebuf.h"
-#include "bigsize.h"
+#include <b12od/bebuf.h>
+#include <b12od/bigsize.h>
 
 uint8_t read_bigsize(uint8_t const* const buf, const size_t maxlength, uint64_t* const value)
 {

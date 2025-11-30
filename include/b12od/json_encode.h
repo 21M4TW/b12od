@@ -3,8 +3,9 @@
 
 #include <stdio.h>
 #include <inttypes.h>
-#include "safe_char.h"
-#include "tobytesbuf.h"
+
+#include <b12od/safe_char.h>
+#include <b12od/tobytesbuf.h>
 
 #define _JSON_BB_GROW_FACT (1.25)
 #define _JSON_BB_RESERVE (256) //Must be sufficient for any JSON error message

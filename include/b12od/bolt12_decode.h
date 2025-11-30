@@ -2,7 +2,8 @@
 #define _BOLT12_DECODE_
 
 #include <inttypes.h>
-#include "tlv.h"
+
+#include <b12od/tlv.h>
 
 #define BOLT12_DECODE_GENERAL_ERROR_BASE (0x200000000000000)
 #define BOLT12_DECODE_BECH32_ERROR_BASE  (0x400000000000000)

@@ -1,5 +1,5 @@
-#include "bolt12_offer_decode.h"
-#include "bolt12_tlv_field_check.h"
+#include <b12od/bolt12_offer_decode.h>
+#include <b12od/bolt12_tlv_field_check.h>
 
 int64_t bolt12_offer_field_processor(struct bolt12_object* b12)
 {

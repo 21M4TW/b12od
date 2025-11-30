@@ -1,4 +1,4 @@
-#include "bolt12_json_tlv.h"
+#include <b12od/bolt12_json_tlv.h>
 
 inline static int sciddir_or_pubkey_enc_func_noalloc(uint8_t const* const data, struct bytesbuf *bb)
 {

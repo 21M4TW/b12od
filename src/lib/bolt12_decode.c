@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "math_utils.h"
-#include "bolt12_decode.h"
-#include "tlv.h"
-#include "safe_char.h"
-#include "bech32_decode.h"
+
+#include <b12od/math_utils.h>
+#include <b12od/bolt12_decode.h>
+#include <b12od/tlv.h>
+#include <b12od/safe_char.h>
+#include <b12od/bech32_decode.h>
 
 #define RSCALING (1.25)
 

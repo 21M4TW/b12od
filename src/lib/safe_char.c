@@ -1,4 +1,4 @@
-#include "safe_char.h"
+#include <b12od/safe_char.h>
 
 const uint16_t _ctable[256] = {
   //0 0x0

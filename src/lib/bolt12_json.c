@@ -1,5 +1,5 @@
-#include "bolt12_offer_json.h"
-#include "bolt12_json_tlv.h"
+#include <b12od/bolt12_offer_json.h>
+#include <b12od/bolt12_json_tlv.h>
 
 const char* bolt12_json(struct bolt12_json* const b12j, const char* const bolt12_string)
 {

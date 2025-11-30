@@ -1,7 +1,7 @@
 #ifndef _BOLT12_TLV_FIELD_CHECK_
 #define _BOLT12_TLV_FIELD_CHECK_
 
-#include "tlv_field_check.h"
+#include <b12od/tlv_field_check.h>
 
 inline static int check_chains(struct tlv_record const* const record){return ((record->length%CHAIN_HASH_LENGTH) == 0);}
 

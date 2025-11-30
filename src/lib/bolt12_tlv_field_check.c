@@ -1,6 +1,6 @@
-#include "bolt12_types.h"
-#include "bebuf.h"
-#include "bolt12_tlv_field_check.h"
+#include <b12od/bolt12_types.h>
+#include <b12od/bebuf.h>
+#include <b12od/bolt12_tlv_field_check.h>
 
 int check_blinded_paths(struct tlv_record const* const record)
 {

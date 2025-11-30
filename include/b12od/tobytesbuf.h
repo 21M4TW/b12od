@@ -5,9 +5,10 @@
 #include<inttypes.h> 
 #include<stdlib.h> 
 #include<string.h> 
-#include "math_utils.h"
-#include "bebuf.h"
-#include "hex_enc.h"
+
+#include <b12od/math_utils.h>
+#include <b12od/bebuf.h>
+#include <b12od/hex_enc.h>
 
 struct bytesbuf
 {

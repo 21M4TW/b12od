@@ -1,6 +1,7 @@
 #include <string.h>
-#include "tlv.h"
-#include "bigsize.h"
+
+#include <b12od/tlv.h>
+#include <b12od/bigsize.h>
 
 size_t read_tlv(byte const* buf, size_t maxlength, struct tlv_record* tlv)
 {

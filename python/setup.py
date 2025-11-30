@@ -25,7 +25,7 @@ extensions = cythonize([
     Extension(
         "b12od.b12od",
         sources=["b12od/b12od.pyx"],
-        include_dirs=["../src/lib"],   # so Cython sees bolt12_offer_decode.h
+        include_dirs=["../include"],   # so Cython sees bolt12_offer_decode.h
         language="c"
     )
 ])

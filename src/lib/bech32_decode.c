@@ -1,10 +1,10 @@
-#include "bech32_decode.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "math_utils.h"
+
+#include <b12od/math_utils.h>
+#include <b12od/bech32_decode.h>
 
 static uint8_t _rtable[256] = {
   //0

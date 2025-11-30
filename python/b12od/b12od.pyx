@@ -1,4 +1,4 @@
-cdef extern from "bolt12_offer_json.h":
+cdef extern from "b12od/bolt12_offer_json.h":
     cdef struct bolt12_json
     bolt12_json* bolt12_offer_json_new()
     const char* bolt12_offer_json(bolt12_json* handle, const char* offer_string)

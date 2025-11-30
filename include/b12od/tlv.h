@@ -3,7 +3,8 @@
 
 #include<stdint.h>
 #include<stdlib.h>
-#include "bolt12_types.h"
+
+#include <b12od/bolt12_types.h>
 
 struct tlv_record
 {

@@ -14,24 +14,26 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
 add_library(b12od STATIC ${SOURCES})
 target_include_directories(b12od
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/lib>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
 
 add_library(b12od_obj_pic OBJECT ${SOURCES})
+target_include_directories(b12od_obj_pic
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
 set_target_properties(b12od_obj_pic PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 add_library(b12od_pic STATIC $<TARGET_OBJECTS:b12od_obj_pic>)
 target_include_directories(b12od_pic
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/lib>
         $<INSTALL_INTERFACE:include>
 )
 
 add_library(b12od_shared SHARED $<TARGET_OBJECTS:b12od_obj_pic>)
 target_include_directories(b12od_shared
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/lib>
         $<INSTALL_INTERFACE:include>
 )
 set_target_properties(b12od_shared PROPERTIES OUTPUT_NAME "b12od")
@@ -54,7 +56,7 @@ install(
 )
 
 file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.h")
-install(FILES ${HEADERS} DESTINATION include)
+install(DIRECTORY include/b12od DESTINATION include)
 
 # 🔧 Add executable
 file(GLOB_RECURSE EXE_SOURCES CONFIGURE_DEPENDS

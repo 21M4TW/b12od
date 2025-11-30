@@ -1,6 +1,7 @@
 #include <inttypes.h>
-#include "bolt12_offer_json.h"
-#include "bolt12_json_tlv.h"
+
+#include <b12od/bolt12_offer_json.h>
+#include <b12od/bolt12_json_tlv.h>
 
 // Important: Vector elements must be sorted
 static struct bolt12_json_vector_element const _b12j_vector[] = {
