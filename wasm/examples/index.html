@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Bolt12 Offer Decoding Test</title>
+</head>
+<body>
+  <h1>Bolt12 Offer Decoding Demo</h1>
+  <textarea id="offer_string" rows="6" cols="128">lno1pgx9getnwss8vetrw3hhyucsl5qj5qeyv5l2cs6y3qqzesrth7mlzrlp3xg7xhulusczm04x6g6nms9trspqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqqsqqqqqqqqqqqqqqqqqqqqqqqqqqpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqsqpqg3zyg3zyg3zygpqqqqzqqqqgqqxqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqqgqqqqqqqqqqqqqqqqqqqqqqqqqqqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgqqsg3zyg3zyg3zygtzzqhwcuj966ma9n9nqwqtl032xeyv6755yeflt235pmww58egx6rxry</textarea></br>
+  <button onclick="run()">Run</button></br>
+  <pre id="output"></pre>
+
+  <!-- Load Emscripten glue -->
+  <script src="b12od.js"></script>
+  <!-- Load your helpers -->
+  <script src="app.js"></script>
+  <script>
+    function run() {
+      const offer_string = document.getElementById('offer_string').value;
+      B12OD().then(Module => {
+        const result = Bolt12OfferDecode(Module, offer_string);
+        document.getElementById('output').textContent = JSON.stringify(JSON.parse(result), null, 2);
+      });
+    }
+  </script>
+</body>
+</html>
+
