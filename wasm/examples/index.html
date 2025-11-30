@@ -7,7 +7,7 @@
 <body>
   <h1>Bolt12 Offer Decoding Demo</h1>
   <textarea id="offer_string" rows="6" cols="128">lno1pgx9getnwss8vetrw3hhyucsl5qj5qeyv5l2cs6y3qqzesrth7mlzrlp3xg7xhulusczm04x6g6nms9trspqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqqsqqqqqqqqqqqqqqqqqqqqqqqqqqpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqsqpqg3zyg3zyg3zygpqqqqzqqqqgqqxqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqqgqqqqqqqqqqqqqqqqqqqqqqqqqqqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgqqsg3zyg3zyg3zygtzzqhwcuj966ma9n9nqwqtl032xeyv6755yeflt235pmww58egx6rxry</textarea></br>
-  <button onclick="run()">Run</button></br>
+  <button onclick="run()">Decode</button></br>
   <pre id="output"></pre>
 
   <!-- Load Emscripten glue -->
@@ -19,7 +19,7 @@
       const offer_string = document.getElementById('offer_string').value;
       B12OD().then(Module => {
         const result = Bolt12OfferDecode(Module, offer_string);
-        document.getElementById('output').textContent = JSON.stringify(JSON.parse(result), null, 2);
+	document.getElementById('output').textContent = JSON.stringify(JSON.parse(result), null, 2);
       });
     }
   </script>

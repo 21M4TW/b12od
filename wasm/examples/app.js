@@ -2,19 +2,17 @@
 function writeString(Module, str) {
   const encoder = new TextEncoder();
   const bytes = encoder.encode(str + "\0");
-  const ptr = 100; // arbitrary offset
+  const ptr = 0;
   new Uint8Array(Module.HEAPU8.buffer, ptr, bytes.length).set(bytes);
   return ptr;
 }
 
 // Helper: read C string from WASM memory
 function readString(Module, ptr) {
-  const mem = new Uint8Array(Module.HEAPU8.buffer);
-  let s = "";
-  while (mem[ptr] !== 0) {
-    s += String.fromCharCode(mem[ptr++]);
-  }
-  return s;
+  const mem = Module.HEAPU8;
+  let end = ptr;
+  while (mem[end] !== 0) end++;
+  return new TextDecoder().decode(mem.subarray(ptr, end));
 }
 
 function Bolt12OfferDecode(Module, offer_string) {
