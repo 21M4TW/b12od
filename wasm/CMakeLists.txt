@@ -13,7 +13,7 @@ target_include_directories(b12od
 )
 
 set_target_properties(b12od PROPERTIES
-    COMPILE_FLAGS "-O3"
+    COMPILE_FLAGS "-O3 -Wall"
     LINK_FLAGS "-s WASM=1 -s EXPORTED_FUNCTIONS='[\"_bolt12_offer_json_new\",\"_bolt12_json\",\"_bolt12_offer_json_delete\"]' \
                 -s EXPORTED_RUNTIME_METHODS='[\"cwrap\",\"getValue\"]' \
 		-s MODULARIZE=1 \

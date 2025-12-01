@@ -26,10 +26,10 @@ jobs:
       run: |
         sudo apt-get update || true
         if [ "$RUNNER_OS" = "Linux" ]; then
-          sudo apt-get install -y cmake g++ make valgrind cargo python3-pip
+          sudo apt-get install -y cmake g++ make valgrind cargo python3-pip emscripten
         fi
         if [ "$RUNNER_OS" = "macOS" ]; then
-          brew install cmake rust python || true
+          brew install cmake rust python emscripten || true
         fi
         python3 -m venv test
         . test/bin/activate
