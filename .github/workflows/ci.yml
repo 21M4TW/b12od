@@ -1,0 +1,42 @@
+name: CMake CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    # Matrix strategy: run on multiple OSes and build types
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        build_type: [Debug, Release]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v4
+
+    # Linux/macOS: install dependencies
+    - name: Install dependencies (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        sudo apt-get update || true
+        if [ "$RUNNER_OS" = "Linux" ]; then
+          sudo apt-get install -y cmake g++ make
+        fi
+        if [ "$RUNNER_OS" = "macOS" ]; then
+          brew install cmake || true
+        fi
+
+    - name: Configure
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }}
+
+    - name: Run tests
+      run: ctest --test-dir build --output-on-failure --build-config ${{ matrix.build_type }}
