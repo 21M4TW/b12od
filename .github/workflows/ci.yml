@@ -31,6 +31,9 @@ jobs:
         if [ "$RUNNER_OS" = "macOS" ]; then
           brew install cmake rust python || true
         fi
+        python3 -m venv test
+        . test/bin/activate
+        pip3 install pytest
 
     - name: Configure
       run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
@@ -43,7 +46,11 @@ jobs:
 
     - name: Run memory tests
       if: runner.os != 'macOS'
-      run: ctest -T memcheck -L memcheck --test-dir build --output-on-failure --build-config ${{ matrix.build_type }} || cat /home/runner/work/b12od/b12od/build/Testing/Temporary/MemoryChecker.*.log
+      run: ctest -T memcheck -L memcheck --test-dir build --output-on-failure --build-config ${{ matrix.build_type }}
+
+    - name: Run memory tests fallback
+      if: failure()
+      run: cat /home/runner/work/b12od/b12od/build/Testing/Temporary/MemoryChecker.*.log
 
     - name: Build Rust
       run: cd rust && cargo build --verbose
@@ -52,5 +59,7 @@ jobs:
       run: rm -f build/libb12od.dylib && cd rust && DYLD_FALLBACK_LIBRARY_PATH=target/debug cargo test --lib -v
 
     - name: Build Python
-      run: cd python && pip install . --verbose
+      run: . test/bin/activate && cd python && pip install . --verbose
 
+    - name: Run Python tests
+      run: . test/bin/activate && cd python && pytest --verbose
