@@ -26,10 +26,10 @@ jobs:
       run: |
         sudo apt-get update || true
         if [ "$RUNNER_OS" = "Linux" ]; then
-          sudo apt-get install -y cmake g++ make valgrind
+          sudo apt-get install -y cmake g++ make valgrind cargo python3-pip
         fi
         if [ "$RUNNER_OS" = "macOS" ]; then
-          brew install cmake || true
+          brew install cmake cargo python || true
         fi
 
     - name: Configure
@@ -44,3 +44,10 @@ jobs:
     - name: Run memory tests
       if: runner.os != 'macOS'
       run: ctest -T memcheck -L memcheck --test-dir build --output-on-failure --build-config ${{ matrix.build_type }}
+
+    - name: Build Rust
+      run: cd rust && cargo build --verbose
+
+    - name: Build Python
+      run: cd python && pip install . --verbose
+
