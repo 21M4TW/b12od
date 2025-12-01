@@ -14,12 +14,13 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.c"
 )
 
-add_library(b12od STATIC ${SOURCES})
-target_include_directories(b12od
+add_library(libb12od STATIC ${SOURCES})
+target_include_directories(libb12od
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
+set_target_properties(libb12od PROPERTIES OUTPUT_NAME "b12od")
 
 add_library(b12od_obj_pic OBJECT ${SOURCES})
 target_include_directories(b12od_obj_pic
@@ -28,18 +29,19 @@ target_include_directories(b12od_obj_pic
 )
 set_target_properties(b12od_obj_pic PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-add_library(b12od_pic STATIC $<TARGET_OBJECTS:b12od_obj_pic>)
-target_include_directories(b12od_pic
+add_library(libb12od_pic STATIC $<TARGET_OBJECTS:b12od_obj_pic>)
+target_include_directories(libb12od_pic
     PUBLIC
         $<INSTALL_INTERFACE:include>
 )
+set_target_properties(libb12od_pic PROPERTIES OUTPUT_NAME "b12od_pic")
 
-add_library(b12od_shared SHARED $<TARGET_OBJECTS:b12od_obj_pic>)
-target_include_directories(b12od_shared
+add_library(libb12od_shared SHARED $<TARGET_OBJECTS:b12od_obj_pic>)
+target_include_directories(libb12od_shared
     PUBLIC
         $<INSTALL_INTERFACE:include>
 )
-set_target_properties(b12od_shared PROPERTIES OUTPUT_NAME "b12od")
+set_target_properties(libb12od_shared PROPERTIES OUTPUT_NAME "b12od")
 
 install(FILES
     DESTINATION lib/cmake/b12od
@@ -47,7 +49,7 @@ install(FILES
 )
 
 install(
-    TARGETS b12od
+    TARGETS libb12od
     EXPORT b12odTargets
 )
 
@@ -62,21 +64,20 @@ file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.h")
 install(DIRECTORY include/b12od DESTINATION include)
 
 # 🔧 Add executable
-add_executable(b12od_exe ${CMAKE_CURRENT_SOURCE_DIR}/src/bin/b12od.c)
-target_include_directories(b12od_exe PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(b12od_exe PRIVATE b12od)
-set_target_properties(b12od_exe PROPERTIES OUTPUT_NAME "b12od")
+add_executable(b12od ${CMAKE_CURRENT_SOURCE_DIR}/src/bin/b12od.c)
+target_include_directories(b12od PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(b12od PRIVATE libb12od)
 
 add_executable(b12od_cmp ${CMAKE_CURRENT_SOURCE_DIR}/src/bin/b12od_cmp.c)
 target_include_directories(b12od_cmp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(b12od_cmp PRIVATE b12od)
+target_link_libraries(b12od_cmp PRIVATE libb12od)
 
 add_executable(b12od_test ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/src/bin/b12od_cmp.c)
 target_include_directories(b12od_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_compile_options(b12od_test PRIVATE -g -D_MINIMUM_ALLOC_TESTING_)
 
 # Optional: install the executable
-install(TARGETS b12od
+install(TARGETS libb12od
     RUNTIME DESTINATION bin
 )
 

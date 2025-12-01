@@ -5,7 +5,7 @@ fn main() {
     // Run CMake to build the C library
     let dst = cmake::Config::new("..")
         .out_dir("..")
-        .build_target("b12od")
+        .build_target("libb12od")
         .build();
 
     // Link the built library

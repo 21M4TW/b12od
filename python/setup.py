@@ -11,7 +11,7 @@ class CMakeBuildExt(build_ext):
         os.makedirs(build_dir, exist_ok=True)
         source_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
         subprocess.check_call(["cmake", source_dir], cwd=build_dir)
-        subprocess.check_call(["cmake", "--build", ".", "--target", "b12od_pic"], cwd=build_dir)
+        subprocess.check_call(["cmake", "--build", ".", "--target", "libb12od_pic"], cwd=build_dir)
         super().run()
 
     def build_extensions(self):
