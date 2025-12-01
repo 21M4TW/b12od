@@ -63,3 +63,6 @@ jobs:
 
     - name: Run Python tests
       run: . test/bin/activate && cd python && pytest --verbose
+
+    - name: Build WASM
+      run: cd wasm && emcmake cmake -S . -B build && cmake --build build --config ${{ matrix.build_type }}
