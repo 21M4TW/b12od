@@ -54,6 +54,17 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
   }
 
   while(len > 0) {
+
+    if(b12->nrecords == narecords) {
+      narecords = ceil_u64((b12->nrecords+1)*RSCALING);
+      b12->records = (struct tlv_record*)realloc(b12->records, narecords * sizeof(struct tlv_record));
+
+      if(!b12->records) {
+        bolt12_free_records(b12);
+	error = BOLT12_MEMORY_ALLOC_ISSUE;
+	goto bolt12_error_cleanup_with_data;
+      }
+    }
     i = read_tlv(off_data, len, b12->records + b12->nrecords);
 
     if(i==0) break;
@@ -77,17 +88,6 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
 	bolt12_free_records(b12);
 	goto bolt12_error_cleanup_with_data;
 
-      }
-    }
-
-    if(b12->nrecords == narecords) {
-      narecords = ceil_u64(narecords*RSCALING);
-      b12->records = (struct tlv_record*)realloc(b12->records, narecords * sizeof(struct tlv_record));
-
-      if(!b12->records) {
-        bolt12_free_records(b12);
-	error = BOLT12_MEMORY_ALLOC_ISSUE;
-	goto bolt12_error_cleanup_with_data;
       }
     }
   }

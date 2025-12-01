@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.19)
+cmake_policy(SET CMP0110 NEW)
 project(Bolt12OfferDecoderProject LANGUAGES C)
 
 include(CMakePackageConfigHelpers)
@@ -61,23 +62,40 @@ file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.h")
 install(DIRECTORY include/b12od DESTINATION include)
 
 # 🔧 Add executable
-file(GLOB_RECURSE EXE_SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/bin/*.c"
-)
-
-add_executable(b12od_exe ${EXE_SOURCES})
+add_executable(b12od_exe ${CMAKE_CURRENT_SOURCE_DIR}/src/bin/b12od.c)
 target_include_directories(b12od_exe PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(b12od_exe PRIVATE b12od)
 set_target_properties(b12od_exe PROPERTIES OUTPUT_NAME "b12od")
 
-add_executable(b12od_test ${SOURCES} ${EXE_SOURCES})
-target_include_directories(b12od_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_compile_options(b12od_test PRIVATE -D_MINIMUM_ALLOC_TESTING_)
+add_executable(b12od_cmp ${CMAKE_CURRENT_SOURCE_DIR}/src/bin/b12od_cmp.c)
+target_include_directories(b12od_cmp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(b12od_cmp PRIVATE b12od)
 
-add_test(NAME memory_single COMMAND valgrind --tool=memcheck $<TARGET_FILE:b12od_test> lno1qfqpge38tqmzyrdjj3x2qkdr5y80dlfw56ztq6yd9sme995g3gsxqqm0u2xq4dh3kdevrf4zg6hx8a60jv0gxe0ptgyfc6xkryqqqqqqqq9qc4r9wd6zqan9vd6x7unnzcss9mk8y3wkklfvevcrszlmu23kfrxh49px20665dqwmn4p72pksese)
-add_test(NAME decode_single COMMAND $<TARGET_FILE:b12od_exe> lno1qfqpge38tqmzyrdjj3x2qkdr5y80dlfw56ztq6yd9sme995g3gsxqqm0u2xq4dh3kdevrf4zg6hx8a60jv0gxe0ptgyfc6xkryqqqqqqqq9qc4r9wd6zqan9vd6x7unnzcss9mk8y3wkklfvevcrszlmu23kfrxh49px20665dqwmn4p72pksese)
+add_executable(b12od_test ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/src/bin/b12od_cmp.c)
+target_include_directories(b12od_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_options(b12od_test PRIVATE -g -D_MINIMUM_ALLOC_TESTING_)
 
 # Optional: install the executable
 install(TARGETS b12od
     RUNTIME DESTINATION bin
 )
+
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/tests/offer_tests.txt" testfile_content)
+string(REGEX REPLACE "\n$" "" testfile_content "${testfile_content}")
+string(REPLACE "\n" ";" test_lines "${testfile_content}")
+
+foreach(line IN LISTS test_lines)
+  string(REPLACE "|" ";" fields "${line}")
+  list(GET fields 0 test_name)
+  list(GET fields 1 test_string)
+  list(GET fields 3 test_expected_result)
+  add_test(NAME ${test_name} COMMAND $<TARGET_FILE:b12od_cmp> ${test_string} ${test_expected_result})
+endforeach()
+
+foreach(line IN LISTS test_lines)
+  string(REPLACE "|" ";" fields "${line}")
+  list(GET fields 0 test_name)
+  list(GET fields 1 test_string)
+  list(GET fields 3 test_expected_result)
+  add_test(NAME "[memory] ${test_name}" COMMAND valgrind --track-origins=yes --leak-check=full $<TARGET_FILE:b12od_test> ${test_string} ${test_expected_result})
+endforeach()
