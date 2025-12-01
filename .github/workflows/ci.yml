@@ -26,7 +26,7 @@ jobs:
       run: |
         sudo apt-get update || true
         if [ "$RUNNER_OS" = "Linux" ]; then
-          sudo apt-get install -y cmake g++ make
+          sudo apt-get install -y cmake g++ make valgrind
         fi
         if [ "$RUNNER_OS" = "macOS" ]; then
           brew install cmake || true
@@ -38,5 +38,9 @@ jobs:
     - name: Build
       run: cmake --build build --config ${{ matrix.build_type }}
 
-    - name: Run tests
-      run: ctest --test-dir build --output-on-failure --build-config ${{ matrix.build_type }}
+    - name: Run comparison tests
+      run: ctest -L cmp --test-dir build --output-on-failure --build-config ${{ matrix.build_type }}
+
+    - name: Run memory tests
+      if: runner.os != 'macOS'
+      run: ctest -T memcheck -L memcheck --test-dir build --output-on-failure --build-config ${{ matrix.build_type }}
