@@ -26,10 +26,10 @@ jobs:
       run: |
         sudo apt-get update || true
         if [ "$RUNNER_OS" = "Linux" ]; then
-          sudo apt-get install -y cmake g++ make valgrind cargo python3-pip emscripten
+          sudo apt-get install -y cmake g++ make valgrind cargo python3-pip emscripten nodejs
         fi
         if [ "$RUNNER_OS" = "macOS" ]; then
-          brew install cmake rust python emscripten || true
+          brew install cmake rust python emscripten nodejs || true
         fi
         python3 -m venv test
         . test/bin/activate
@@ -39,7 +39,7 @@ jobs:
       run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
     - name: Build
-      run: cmake --build build --config ${{ matrix.build_type }}
+      run: cmake --build build --verbose --config ${{ matrix.build_type }}
 
     - name: Run comparison tests
       run: ctest -L cmp --test-dir build --output-on-failure --build-config ${{ matrix.build_type }}
@@ -65,4 +65,4 @@ jobs:
       run: . test/bin/activate && cd python && pytest --verbose
 
     - name: Build WASM
-      run: cd wasm && emcmake cmake -S . -B build && cmake --build build --config ${{ matrix.build_type }}
+      run: cd wasm && emcmake cmake -S . -B build && cmake --build build --verbose --config ${{ matrix.build_type }}
