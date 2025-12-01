@@ -8,6 +8,7 @@ include(CTest)
 option(BUILD_SHARED_LIBS "Build shared libraries instead of static ones" OFF)
 
 add_compile_options(-O3 -march=native -Wall)
+add_link_options(-O3 -march=native -Wall)
 
 # Automatically collect sources
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
