@@ -30,7 +30,10 @@ int main(const int nargs, const char* args[])
     } else {
       printf("%s", json_string);
 
-      if(strcmp(json_string, args[2])) return 1;
+      if(strcmp(json_string, args[2])) {
+	fprintf(stderr, "Comparison failed: '%s' vs '%s'\n", json_string, args[2]);
+	ret = 1;
+      }
     }
   }
 

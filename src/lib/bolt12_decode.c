@@ -93,7 +93,7 @@ int64_t bolt12_decode(const char* string, bolt12_object_ptr bolt12)
   }
   free(data);
 
-  if(len > 0) {
+  if(len > 0 || b12->nrecords == 0) {
     bolt12_free_records(b12);
     error = BOLT12_INVALID_TLV_RECORD;
     goto bolt12_error_cleanup;

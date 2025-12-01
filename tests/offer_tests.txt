@@ -20,7 +20,7 @@ unknown odd field|lno1pgx9getnwss8vetrw3hhyuckyypwa3eyt44h6txtxquqh7lz5djge4afgf
 unknown odd experimental field|lno1pgx9getnwss8vetrw3hhyuckyypwa3eyt44h6txtxquqh7lz5djge4afgfjn7k4rgrkuag0jsd5xvx078wdv5gg2dpjkcmr0wahhymry|True|{"offer_description":"Test vectors","offer_issuer_id":"02eec7245d6b7d2ccb30380bfbe2a3648cd7a942653f5aa340edcea1f283686619","1000000033":"68656c6c6f776f726c64"}
 Malformed: fields out of order|lno1zcssyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszpgz5znzfgdzs|False|{"code":144115188075855874,"message":"Bolt12 decoding: The ordering of TLV fields is not strictly increasing"}
 Malformed: unknown even TLV type 78|lno1pgz5znzfgdz3vggzqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpysgr0u2xq4dh3kdevrf4zg6hx8a60jv0gxe0ptgyfc6xkryqqqqqqqq|False|{"code":144115188075855877,"message":"Bolt12 decoding: Unknown TLV type with even value"}
-Malformed: empty|lno1|False|{"code":16,"message":"Bolt12 decoding: Invalid or missing offer paths field"}
+Malformed: empty|lno1|False|{"code":144115188075855875,"message":"Bolt12 decoding: Invalid TLV record"}
 Malformed: truncated at type|lno1pg|False|{"code":144115188075855875,"message":"Bolt12 decoding: Invalid TLV record"}
 Malformed: truncated in length|lno1pt7s|False|{"code":144115188075855875,"message":"Bolt12 decoding: Invalid TLV record"}
 Malformed: truncated after length|lno1pgpq|False|{"code":144115188075855875,"message":"Bolt12 decoding: Invalid TLV record"}

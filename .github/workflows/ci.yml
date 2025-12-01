@@ -50,7 +50,7 @@ jobs:
 
     - name: Run memory tests fallback
       if: failure()
-      run: cat /home/runner/work/b12od/b12od/build/Testing/Temporary/MemoryChecker.*.log
+      run: cat /home/runner/work/b12od/b12od/build/Testing/Temporary/{MemoryChecker.,LastDynamicAnalysis}*.log
 
     - name: Build Rust
       run: cd rust && cargo build --verbose

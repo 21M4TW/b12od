@@ -77,6 +77,10 @@ add_executable(b12od_test ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/src/bin/b12od_c
 target_include_directories(b12od_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_compile_options(b12od_test PRIVATE -g -D_MINIMUM_ALLOC_TESTING_)
 
+add_executable(b12od_test_many ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/src/bin/b12od_many.c)
+target_include_directories(b12od_test_many PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_options(b12od_test_many PRIVATE -g -D_MINIMUM_ALLOC_TESTING_)
+
 # Optional: install the executable
 install(TARGETS libb12od
     RUNTIME DESTINATION bin
@@ -94,12 +98,16 @@ foreach(line IN LISTS test_lines)
   add_test(NAME ${test_name} COMMAND $<TARGET_FILE:b12od_cmp> ${test_string} ${test_expected_result})
   set_tests_properties(${test_name} PROPERTIES LABELS "cmp")
 endforeach()
+set(ALL_STRINGS "")
 
 foreach(line IN LISTS test_lines)
   string(REPLACE "|" ";" fields "${line}")
   list(GET fields 0 test_name)
   list(GET fields 1 test_string)
   list(GET fields 3 test_expected_result)
+  set(ALL_STRINGS "${ALL_STRINGS} ${test_string}")
   add_test(NAME "[memory] ${test_name}" COMMAND $<TARGET_FILE:b12od_test> ${test_string} ${test_expected_result})
   set_tests_properties("[memory] ${test_name}" PROPERTIES LABELS "memcheck")
 endforeach()
+add_test(NAME "[memory] All offer strings" COMMAND $<TARGET_FILE:b12od_test_many> ${ALL_STRINGS})
+set_tests_properties("[memory] All offer strings" PROPERTIES LABELS "memcheck")
