@@ -62,7 +62,7 @@ int bech32_decode(const char* bech32_string, char** prefix, uint8_t** data, size
   size_t i, j=0;
   uint8_t acclen=0;
   uint16_t acc=0;
-  char c;
+  char c=0;
   int upper=0, lower=0;
   int error;
 

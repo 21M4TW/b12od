@@ -132,7 +132,7 @@ inline static int8_t read_single_utf8(const char** inbuf, size_t* inbuflen, cons
 
 inline static int read_utf8(const char* inbuf, size_t inbuflen, const uint16_t char_mask, char* const outbuf, const size_t outbuflen, size_t* const outlen)
 {
-  int8_t ret;
+  int8_t ret=-1;
   *outlen=0;
 
   if(outbuflen < 6*inbuflen) return -1;
