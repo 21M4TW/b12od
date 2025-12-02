@@ -2,6 +2,14 @@
 name = "b12od"
 version = "0.1.0"
 edition = "2024"
+description = "Bolt12 Offer Decoding Library"
+repository = "https://github.com/21M4TW/b12od"
+license = "BSD 2-Clause"
+licese-file = "LICENSE"
+
+include = [
+    "b12od-lib/**"
+]
 
 [dependencies]
 libc = "0.2"
