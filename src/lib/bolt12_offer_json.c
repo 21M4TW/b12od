@@ -44,7 +44,12 @@ void bolt12_offer_json_delete(struct bolt12_json* const b12j)
   bolt12_json_delete(b12j);
 }
 
+void bolt12_offer_json_shrink_to_fit(struct bolt12_json* const b12j)
+{
+  json_shrink_to_fit(&b12j->jctx);
+}
+
 size_t bolt12_offer_json_get_size(struct bolt12_json* const b12j)
 {
-  return b12j->jctx.bb.size;
+  return b12j->jctx.bb.size - 1;
 }

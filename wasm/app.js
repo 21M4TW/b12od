@@ -8,18 +8,17 @@ function writeString(Module, str) {
 }
 
 // Helper: read C string from WASM memory
-function readString(Module, ptr) {
+function readString(Module, ptr, size) {
   const mem = Module.HEAPU8;
-  let end = ptr;
-  while (mem[end] !== 0) end++;
-  return new TextDecoder().decode(mem.subarray(ptr, end));
+  return new TextDecoder().decode(mem.subarray(ptr, ptr + size));
 }
 
 export function Bolt12OfferDecode(Module, offer_string) {
   const b12j = Module._bolt12_offer_json_new();
   const inputPtr = writeString(Module, offer_string);
   const resultPtr = Module._bolt12_json(b12j, inputPtr);
-  const result = readString(Module, resultPtr);
+  const size = Module._bolt12_offer_json_get_size(b12j);
+  const result = readString(Module, resultPtr, size);
   Module._bolt12_offer_json_delete(b12j);
   return result;
 }
