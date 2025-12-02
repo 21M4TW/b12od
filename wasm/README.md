@@ -7,7 +7,6 @@ module. The module can then be compiled and tested using the following commands:
 ```
 emcmake cmake -S . -B build
 cmake --build build
-cp build/b12od.{wasm, js} examples/
-cd examples/
+cmake --install build --prefix .
 python3 -m http.server 8080
 ```

@@ -14,4 +14,6 @@ void bolt12_offer_json_delete(struct bolt12_json* const b12j);
 
 #define bolt12_offer_json_shrink_to_fit bolt12_json_shrink_to_fit
 
+size_t bolt12_offer_json_get_size(struct bolt12_json* const b12j);
+
 #endif

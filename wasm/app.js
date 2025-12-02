@@ -15,11 +15,16 @@ function readString(Module, ptr) {
   return new TextDecoder().decode(mem.subarray(ptr, end));
 }
 
-function Bolt12OfferDecode(Module, offer_string) {
+export function Bolt12OfferDecode(Module, offer_string) {
   const b12j = Module._bolt12_offer_json_new();
   const inputPtr = writeString(Module, offer_string);
   const resultPtr = Module._bolt12_json(b12j, inputPtr);
-  result = readString(Module, resultPtr);
+  const result = readString(Module, resultPtr);
   Module._bolt12_offer_json_delete(b12j);
   return result;
+}
+
+if (typeof window !== "undefined" && typeof document !== "undefined") {
+// expose to global scope
+window.Bolt12OfferDecode = Bolt12OfferDecode;
 }

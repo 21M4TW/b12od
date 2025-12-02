@@ -43,3 +43,8 @@ void bolt12_offer_json_delete(struct bolt12_json* const b12j)
   free(b12j->b12);
   bolt12_json_delete(b12j);
 }
+
+size_t bolt12_offer_json_get_size(struct bolt12_json* const b12j)
+{
+  return b12j->jctx.bb.size;
+}

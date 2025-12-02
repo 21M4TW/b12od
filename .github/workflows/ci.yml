@@ -65,4 +65,7 @@ jobs:
       run: . test/bin/activate && cd python && pytest --verbose
 
     - name: Build WASM
-      run: cd wasm && emcmake cmake -S . -B build && cmake --build build --verbose --config ${{ matrix.build_type }}
+      run: cd wasm && emcmake cmake -S . -B build && cmake --build build --verbose --config ${{ matrix.build_type }} && cmake --install build --prefix . --config ${{ matrix.build_type }}
+
+    - name: Run WASM tests
+      run: cd wasm && node test.js
