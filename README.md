@@ -18,3 +18,45 @@ current time.
 
 ## Sample Usage Code
 Sample usage C code for the library is available in [src/bin](https://github.com/21M4TW/b12od/tree/main/src/bin). Refer to the documentation in the [rust](https://github.com/21M4TW/b12od/tree/main/rust), [python](https://github.com/21M4TW/b12od/tree/main/python) and [wasm](https://github.com/21M4TW/b12od/tree/main/wasm) binding directories for related sample code.
+
+## Example
+
+Decoding an offer with mixed types of blinded paths, using the `b12od` C sample executable:
+```
+% b12od lno1pgx9getnwss8vetrw3hhyucsl5qj5qeyv5l2cs6y3qqzesrth7mlzrlp3xg7xhulusczm04x6g6nms9trspqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqqsqqqqqqqqqqqqqqqqqqqqqqqqqqpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqsqpqg3zyg3zyg3zygpqqqqzqqqqgqqxqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqqgqqqqqqqqqqqqqqqqqqqqqqqqqqqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgpqyqszqgqqsg3zyg3zyg3zygtzzqhwcuj966ma9n9nqwqtl032xeyv6755yeflt235pmww58egx6rxry | jq
+{
+  "offer_description": "Test vectors",
+  "offer_paths": [
+    {
+      "first_node_id": "0324653eac434488002cc06bbfb7f10fe18991e35f9fe4302dbea6d2353dc0ab1c",
+      "first_path_key": "020202020202020202020202020202020202020202020202020202020202020202",
+      "path": [
+        {
+          "blinded_node_id": "020202020202020202020202020202020202020202020202020202020202020202",
+          "encrypted_recipient_data": "00000000000000000000000000000000"
+        },
+        {
+          "blinded_node_id": "020202020202020202020202020202020202020202020202020202020202020202",
+          "encrypted_recipient_data": "1111111111111111"
+        }
+      ]
+    },
+    {
+      "first_scid": "1x2x3",
+      "first_scid_dir": 1,
+      "first_path_key": "020202020202020202020202020202020202020202020202020202020202020202",
+      "path": [
+        {
+          "blinded_node_id": "020202020202020202020202020202020202020202020202020202020202020202",
+          "encrypted_recipient_data": "00000000000000000000000000000000"
+        },
+        {
+          "blinded_node_id": "020202020202020202020202020202020202020202020202020202020202020202",
+          "encrypted_recipient_data": "2222222222222222"
+        }
+      ]
+    }
+  ],
+  "offer_issuer_id": "02eec7245d6b7d2ccb30380bfbe2a3648cd7a942653f5aa340edcea1f283686619"
+}
+```
