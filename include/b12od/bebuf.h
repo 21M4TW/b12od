@@ -39,8 +39,8 @@ static inline uint64_t betbuftoh64(uint8_t const* const buf, const uint8_t nbyte
   }
 }
 
-inline static void htobebuf16(const uint16_t value, uint8_t* const buf){*(uint16_t*)buf = ((uint16_t)((uint8_t*)&value)[0])<<8|((uint8_t*)&value)[1];}
-inline static void htobebuf32(const uint32_t value, uint8_t* const buf){*(uint32_t*)buf = ((uint32_t)((uint8_t*)&value)[0])<<24|((uint32_t)((uint8_t*)&value)[1])<<16|((uint16_t)((uint8_t*)&value)[2])<<8|((uint8_t*)&value)[3];}
-inline static void htobebuf64(const uint64_t value, uint8_t* const buf){*(uint64_t*)buf = ((uint64_t)((uint8_t*)&value)[0])<<56|((uint64_t)((uint8_t*)&value)[1])<<48|((uint64_t)((uint8_t*)&value)[2])<<40|((uint64_t)((uint8_t*)&value)[3])<<32|((uint32_t)((uint8_t*)&value)[4])<<24|((uint32_t)((uint8_t*)&value)[5])<<16|((uint16_t)((uint8_t*)&value)[6])<<8|((uint8_t*)&value)[7];}
+inline static void htobebuf16(const uint16_t value, uint8_t* const buf){buf[0] = (value>>8); buf[1] = value;}
+inline static void htobebuf32(const uint32_t value, uint8_t* const buf){buf[0] = (value>>24); buf[1] = (value>>16); buf[2] = (value>>8); buf[3] = value;}
+inline static void htobebuf64(const uint64_t value, uint8_t* const buf){buf[0] = (value>>56); buf[1] = (value>>48); buf[2] = (value>>40); buf[3] = (value>>32); buf[4] = (value>>24); buf[5] = (value>>16); buf[6] = (value>>8); buf[7] = value;}
 
 #endif
