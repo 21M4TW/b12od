@@ -146,7 +146,16 @@ int bech32_decode(const char* bech32_string, char** prefix, uint8_t** data, size
 
   if(j < *len) {
     *len = j;
-    *data = realloc(*data, j);
+
+    if(j > 0) {
+      uint8_t* new_data = (uint8_t*)realloc(*data, j);
+
+      if(new_data) *data = new_data;
+
+    } else {
+      free(*data);
+      *data = NULL;
+    }
   }
 
   return BECH32_OK;

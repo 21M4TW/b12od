@@ -33,9 +33,17 @@ inline static void tobb_grow_fact(struct bytesbuf* const bb, const float grow_fa
 inline static int tobb_reserve(struct bytesbuf* const bb, const size_t alloc)
 {
   if(alloc > bb->alloc) {
-    bb->buf = (uint8_t*)realloc(bb->buf, alloc);
+    uint8_t* newbuf = (uint8_t*)realloc(bb->buf, alloc);
 
-    if(!bb->buf) return INT32_MIN;
+    if(!newbuf) {
+
+      if(bb->buf) {
+	free(bb->buf);
+	bb->buf = NULL;
+      }
+      return INT32_MIN;
+    }
+    bb->buf = newbuf;
     bb->alloc = alloc;
   }
   return 0;
@@ -48,15 +56,26 @@ inline static int tobb_reserve_for(struct bytesbuf* const bb, const size_t extra
  \
   if(needed_alloc > bb->alloc) { \
     size_t target_alloc = ceil_u64(needed_alloc * bb->grow_fact); \
-    bb->buf = (uint8_t*)realloc(bb->buf, target_alloc); \
+    uint8_t* newbuf = (uint8_t*)realloc(bb->buf, target_alloc); \
  \
-    if(!bb->buf) {\
-      bb->buf = (uint8_t*)realloc(bb->buf, needed_alloc); \
+    if(!newbuf) {\
+      newbuf = (uint8_t*)realloc(bb->buf, needed_alloc); \
  \
-      if(!bb->buf) return INT32_MIN; \
+      if(!newbuf) {\
+ \
+	if(bb->buf) {\
+	  free(bb->buf); \
+	  bb->buf = NULL; \
+	} \
+	return INT32_MIN; \
+      }\
+      bb->buf = newbuf; \
       bb->alloc = needed_alloc; \
  \
-    } else bb->alloc = target_alloc; \
+    } else {\
+      bb->buf = newbuf; \
+      bb->alloc = target_alloc; \
+    }\
   }\
 }
   _TOBB_RESERVE_FOR_(extra_alloc);
@@ -164,6 +183,19 @@ inline static void tobb_free(struct bytesbuf* const bb){if(bb->buf) {free(bb->bu
 
 inline static void tobb_reset(struct bytesbuf* const bb){bb->size = 0;}
 
-inline static void tobb_shrink_to_fit(struct bytesbuf* const bb){bb->buf = (uint8_t*)realloc(bb->buf, bb->size); bb->alloc = bb->size;}
+inline static void tobb_shrink_to_fit(struct bytesbuf* const bb){
+  if(bb->size > 0) {
+    uint8_t* newbuf = (uint8_t*)realloc(bb->buf, bb->size);
+
+    if(newbuf) {
+      bb->buf = newbuf;
+      bb->alloc = bb->size;
+    }
+
+  } else {
+    free(bb->buf);
+    bb->buf = NULL;
+  }
+}
 
 #endif
