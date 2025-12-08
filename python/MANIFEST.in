@@ -1,0 +1,2 @@
+include b12od/*.pyx
+include ../CMakeLists.txt

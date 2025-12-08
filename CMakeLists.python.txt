@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.19)
+cmake_policy(SET CMP0110 NEW)
+
+include(CMakePackageConfigHelpers)
+
+file(GLOB PYTHON_FILES ${CMAKE_CURRENT_SOURCE_DIR}/python/b12od.pyx ${CMAKE_CURRENT_SOURCE_DIR}/python/__init__.py)
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/python/venv
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python
+  COMMAND python -m venv venv
+)
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/python/.built
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python
+  DEPENDS ${outputs_python} ${PYTHON_FILES} ${CMAKE_CURRENT_SOURCE_DIR}/python/venv #Cannot use mirror_python here, need to check the timestamp of the actual output files
+  COMMAND ${CMAKE_COMMAND} -E env BUILD_TYPE=${CMAKE_BUILD_TYPE} CMAKE_C_FLAGS=${EFFECTIVE_C_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/python/venv/bin/pip install . ${PIP_OPT} --verbose
+  COMMAND touch .built
+)
+
+add_custom_target(python_binding DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/python/.built)

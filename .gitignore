@@ -1,0 +1,13 @@
+build/
+*/build/
+*/b12od-core/
+python/.built
+python/b12od.egg-info/
+python/b12od/b12od.c
+python/dist/
+python/tests/__pycache__/
+python/venv/
+rust/Cargo.lock
+rust/target/
+wasm/b12od.js
+wasm/b12od.wasm

@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.19)
+cmake_policy(SET CMP0110 NEW)
+
+include(CMakePackageConfigHelpers)
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/wasm/b12od.wasm ${CMAKE_CURRENT_SOURCE_DIR}/wasm/b12od.js
+  DEPENDS ${outputs_wasm} #Cannot use mirror_wasm here, need to check the timestamp of the actual output files
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/wasm
+  COMMAND emcmake ${CMAKE_COMMAND} -S . -B build
+  COMMAND ${CMAKE_COMMAND} --build build
+  COMMAND ${CMAKE_COMMAND} --install build --prefix .
+)
+
+add_custom_target(wasm_binding DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/wasm/b12od.wasm ${CMAKE_CURRENT_SOURCE_DIR}/wasm/b12od.js)
+

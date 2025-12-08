@@ -2,22 +2,28 @@
 
 CMake is used to build the library. Once inside the repository, it can be built using
 
-`cmake .`
-
-`make`
+```
+cmake -S . -B build
+cmake --build build
+```
 
 and then installed with
 
-`make install`
-
-An installation directory can be specified through `cmake` using
-
-`cmake -DCMAKE_INSTALL_PREFIX=[destination_directory] .`
+`cmake --install build --prefix [destination_directory]`.
 
 # Testing
 
 The library can be tested using
 ```
+cd build
 ctest -L cmp
 ctest -T memcheck -L memcheck
 ```
+
+Individual python_binding, rust_binding and wasm_binding targets are defined,
+and an all_bindings target also exists, e.g.:
+```
+cd build
+make all_bindings
+```
+

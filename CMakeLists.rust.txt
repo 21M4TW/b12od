@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.19)
+cmake_policy(SET CMP0110 NEW)
+
+include(CMakePackageConfigHelpers)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(CARGO_OPT "")
+  set(CARGO_DIR "debug")
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(CARGO_OPT "--release")
+  set(CARGO_DIR "release")
+endif()
+
+add_custom_target(rust_binding DEPENDS mirror_rust
+  #Can use a command directly in the target as cargo only build as required
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/rust
+  COMMAND cargo build ${CARGO_OPT} --verbose
+)

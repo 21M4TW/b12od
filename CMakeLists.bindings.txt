@@ -1,0 +1,96 @@
+cmake_minimum_required(VERSION 3.19)
+cmake_policy(SET CMP0110 NEW)
+
+include(CMakePackageConfigHelpers)
+
+# Automatically collect sources
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/lib/*.c"
+)
+
+# Automatically collect sources
+file(GLOB_RECURSE EXE_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/bin/*.c"
+)
+
+file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/b12od/*.h")
+install(DIRECTORY include/b12od DESTINATION include)
+
+set(BINDING_DIRS python rust wasm)
+
+foreach(dest ${BINDING_DIRS})
+
+  foreach(hdr ${HEADERS})
+    get_filename_component(fname ${hdr} NAME)
+    set(dest_file ${CMAKE_SOURCE_DIR}/${dest}/b12od-core/include/b12od/${fname})
+
+    add_custom_command(
+      OUTPUT ${dest_file}
+      COMMAND ${CMAKE_COMMAND} -E copy ${hdr} ${dest_file}
+      DEPENDS ${hdr}
+    )
+
+    # Collect outputs for each destination directory
+    list(APPEND outputs_${dest} ${dest_file})
+  endforeach()
+
+  foreach(src ${SOURCES})
+    get_filename_component(fname ${src} NAME)
+    set(dest_file ${CMAKE_SOURCE_DIR}/${dest}/b12od-core/src/lib/${fname})
+
+    add_custom_command(
+      OUTPUT ${dest_file}
+      COMMAND ${CMAKE_COMMAND} -E copy ${src} ${dest_file}
+      DEPENDS ${src}
+    )
+
+    # Collect outputs for each destination directory
+    list(APPEND outputs_${dest} ${dest_file})
+  endforeach()
+
+  foreach(src ${EXE_SOURCES})
+    get_filename_component(fname ${src} NAME)
+    set(dest_file ${CMAKE_SOURCE_DIR}/${dest}/b12od-core/src/bin/${fname})
+
+    add_custom_command(
+      OUTPUT ${dest_file}
+      COMMAND ${CMAKE_COMMAND} -E copy ${src} ${dest_file}
+      DEPENDS ${src}
+    )
+
+    # Collect outputs for each destination directory
+    list(APPEND outputs_${dest} ${dest_file})
+  endforeach()
+
+  file(GLOB TESTS CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/*"
+  )
+
+  foreach(test ${TESTS})
+    get_filename_component(fname ${test} NAME)
+    set(dest_file ${CMAKE_SOURCE_DIR}/${dest}/b12od-core/tests/${fname})
+
+    add_custom_command(
+      OUTPUT ${dest_file}
+      COMMAND ${CMAKE_COMMAND} -E copy ${test} ${dest_file}
+      DEPENDS ${test}
+    )
+
+    # Collect outputs for each destination directory
+    list(APPEND outputs_${dest} ${dest_file})
+  endforeach()
+
+  set(cmfile ${CMAKE_SOURCE_DIR}/CMakeLists.core.txt)
+  set(dest_file ${CMAKE_SOURCE_DIR}/${dest}/b12od-core/CMakeLists.txt)
+
+  add_custom_command(
+    OUTPUT ${dest_file}
+    COMMAND ${CMAKE_COMMAND} -E copy ${cmfile} ${dest_file}
+    DEPENDS ${cmfile}
+  )
+
+  # Collect outputs for each destination directory
+  list(APPEND outputs_${dest} ${dest_file})
+
+  add_custom_target(mirror_${dest} DEPENDS ${outputs_${dest}})
+endforeach()

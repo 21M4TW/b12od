@@ -1,9 +1,10 @@
 # Bolt12 Offer Decoding Library
 
-Rust binding for the [Bolt12 Offer Decoding Library](https://github.com/21M4TW/b12od). The library can be built and tested using:
+Rust binding for the [Bolt12 Offer Decoding Library](https://github.com/21M4TW/b12od). The library can be built using the rust_binding target from the
+main directory of the repository.
 
+It can then be tested using:
 ```
-cargo build
 cargo test --lib
 ```
 

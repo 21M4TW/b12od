@@ -31,9 +31,6 @@ jobs:
         if [ "$RUNNER_OS" = "macOS" ]; then
           brew install cmake rust python emscripten nodejs || true
         fi
-        python3 -m venv test
-        . test/bin/activate
-        pip3 install pytest
 
     - name: Configure
       run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
@@ -53,19 +50,19 @@ jobs:
       run: cat /home/runner/work/b12od/b12od/build/Testing/Temporary/{MemoryChecker.,LastDynamicAnalysis}*.log
 
     - name: Build Rust
-      run: cd rust && cargo build --verbose
+      run: cmake --build build --verbose --config ${{ matrix.build_type }} --target rust_binding
 
     - name: Run Rust tests
-      run: rm -f build/libb12od.dylib && cd rust && DYLD_FALLBACK_LIBRARY_PATH=target/debug cargo test --lib -v
+      run: cd rust && DYLD_FALLBACK_LIBRARY_PATH=target/debug cargo test --lib -v
 
     - name: Build Python
-      run: . test/bin/activate && cd python && pip install . --verbose
+      run: cmake --build build --verbose --config ${{ matrix.build_type }} --target python_binding
 
     - name: Run Python tests
-      run: . test/bin/activate && cd python && pytest --verbose
+      run: . python/venv/bin/activate && cd python && ./venv/bin/pytest --verbose
 
     - name: Build WASM
-      run: cd wasm && emcmake cmake -S . -B build && cmake --build build --verbose --config ${{ matrix.build_type }} && cmake --install build --prefix . --config ${{ matrix.build_type }}
+      run: cmake --build build --verbose --config ${{ matrix.build_type }} --target wasm_binding
 
     - name: Run WASM tests
       run: cd wasm && node test.js

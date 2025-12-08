@@ -1,12 +1,11 @@
 # Bolt12 Offer Decoding Library
 
-Python binding for the [Bolt12 Offer Decoding Library](https://github.com/21M4TW/b12od). The library can be built and tested using:
+Python binding for the [Bolt12 Offer Decoding Library](https://github.com/21M4TW/b12od). The library can be built
+using the python_binding target from the main directory of the repository.
 
+It can then be testing using
 ```
-python3 -m venv test
-. test/bin/activate
-pip3 install pytest
-pip install .
+. venv/bin/activate
 pytest
 ```
 
