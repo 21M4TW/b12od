@@ -52,11 +52,17 @@ jobs:
     - name: Build Rust
       run: cmake --build build --verbose --config ${{ matrix.build_type }} --target rust_binding
 
+    - name: Build Rust Package
+      run: cd rust && cargo publish --dry-run --allow-dirty -v
+
     - name: Run Rust tests
       run: cd rust && DYLD_FALLBACK_LIBRARY_PATH=target/debug cargo test --lib -v
 
     - name: Build Python
       run: cmake --build build --verbose --config ${{ matrix.build_type }} --target python_binding
+
+    - name: Build Python Package
+      run: . python/venv/bin/activate && cd python && ./venv/bin/pip install build && ./venv/bin/python -v -m build --sdist
 
     - name: Run Python tests
       run: . python/venv/bin/activate && cd python && ./venv/bin/pytest --verbose

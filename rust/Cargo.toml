@@ -1,15 +1,18 @@
 [package]
 name = "b12od"
-version = "0.1.0"
+version = "0.1.3"
 edition = "2024"
 description = "Bolt12 Offer Decoding Library"
 repository = "https://github.com/21M4TW/b12od"
-license-file = "LICENSE"
+license = "BSD-2-Clause"
 
 include = [
     "build.rs",
     "src/**",
-    "b12od-lib/**",
+    "b12od-core/CMakeLists.txt",
+    "b12od-core/tests/offer_tests.txt",
+    "b12od-core/include/**",
+    "b12od-core/src/**",
     "LICENSE",
     "README.md"
 ]

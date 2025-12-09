@@ -16,3 +16,8 @@ add_custom_target(rust_binding DEPENDS mirror_rust
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/rust
   COMMAND cargo build ${CARGO_OPT} --verbose
 )
+
+add_custom_target(rust_package DEPENDS mirror_rust
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/rust
+  COMMAND cargo publish --dry-run --allow-dirty --verbose
+)

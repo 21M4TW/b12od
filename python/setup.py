@@ -30,22 +30,16 @@ class CMakeBuildExt(build_ext):
 c_flags = os.environ.get("CMAKE_C_FLAGS", "").split()
 
 extensions = cythonize([
-    Extension(
-        "b12od.b12od",
-        sources=["b12od/b12od.pyx"],
-        include_dirs=["b12od-core/include"],   # so Cython sees bolt12_offer_decode.h
-        language="c",
-        extra_compile_args=c_flags
-    )
+  Extension(
+    "b12od.b12od",
+    sources=["b12od/b12od.pyx"],
+    include_dirs=["b12od-core/include"],   # so Cython sees bolt12_offer_decode.h
+    language="c",
+    extra_compile_args=c_flags
+  )
 ])
 
 setup(
-    name="b12od",
-    version="0.1.0",
-    description="Python bindings for b12od C library",
-    author="21M4TW",
-    author_email="21M4TW@proton.me",
-    url="https://github.com/21M4TW/b12od",
     ext_modules=extensions,
     cmdclass={"build_ext": CMakeBuildExt},
     packages=["b12od"],

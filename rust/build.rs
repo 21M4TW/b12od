@@ -1,12 +1,10 @@
 use std::env;
-use std::path::PathBuf;
 
 fn main() {
     // Tell Cargo to rerun if CMakeLists.txt changes
     println!("cargo:rerun-if-changed=./b12od-core/CMakeLists.txt");
 
-    let abs_out = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
-        .join("b12od-core");
+    let abs_out = env::var("OUT_DIR").unwrap();
 
     // Run CMake to build the C library
     cmake::Config::new("./b12od-core/CMakeLists.txt")
@@ -15,7 +13,7 @@ fn main() {
         .build();
 
     // Link the built library
-    println!("cargo:rustc-link-search=native={}/build", abs_out.display());
+    println!("cargo:rustc-link-search=native={}/build", abs_out);
     println!("cargo:rustc-link-lib=static=b12od"); // or "dylib=b12od" if shared
 
     // Tell Cargo to rerun if headers change

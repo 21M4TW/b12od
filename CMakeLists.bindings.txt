@@ -62,23 +62,17 @@ foreach(dest ${BINDING_DIRS})
     list(APPEND outputs_${dest} ${dest_file})
   endforeach()
 
-  file(GLOB TESTS CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/tests/*"
+  set(testfile ${CMAKE_SOURCE_DIR}/tests/offer_tests.txt)
+  set(dest_file ${CMAKE_SOURCE_DIR}/${dest}/b12od-core/tests/offer_tests.txt)
+
+  add_custom_command(
+    OUTPUT ${dest_file}
+    COMMAND ${CMAKE_COMMAND} -E copy ${testfile} ${dest_file}
+    DEPENDS ${testfile}
   )
 
-  foreach(test ${TESTS})
-    get_filename_component(fname ${test} NAME)
-    set(dest_file ${CMAKE_SOURCE_DIR}/${dest}/b12od-core/tests/${fname})
-
-    add_custom_command(
-      OUTPUT ${dest_file}
-      COMMAND ${CMAKE_COMMAND} -E copy ${test} ${dest_file}
-      DEPENDS ${test}
-    )
-
-    # Collect outputs for each destination directory
-    list(APPEND outputs_${dest} ${dest_file})
-  endforeach()
+  # Collect outputs for each destination directory
+  list(APPEND outputs_${dest} ${dest_file})
 
   set(cmfile ${CMAKE_SOURCE_DIR}/CMakeLists.core.txt)
   set(dest_file ${CMAKE_SOURCE_DIR}/${dest}/b12od-core/CMakeLists.txt)

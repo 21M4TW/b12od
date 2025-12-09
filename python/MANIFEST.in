@@ -1,2 +1,9 @@
+include README.md LICENSE
 include b12od/*.pyx
-include ../CMakeLists.txt
+include b12od/__init__.py
+include b12od-core/CMakeLists.txt
+include b12od-core/tests/offer_tests.txt
+recursive-include b12od-core/include *.h
+recursive-include b12od-core/src *.c
+prune build
+prune b12od-core/build
