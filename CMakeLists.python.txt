@@ -21,5 +21,6 @@ add_custom_target(python_binding DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/python/.bui
 
 add_custom_target(python_package DEPENDS ${outputs_python} ${PYTHON_FILES} ${CMAKE_CURRENT_SOURCE_DIR}/python/venv
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python
-  COMMAND ${CMAKE_COMMAND} -E env BUILD_TYPE=${CMAKE_BUILD_TYPE} CMAKE_C_FLAGS=${EFFECTIVE_C_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/python/venv/bin/python -v -m build --sdist --no-isolation
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/python/venv/bin/pip install build
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/python/venv/bin/python -m build --sdist
 )
