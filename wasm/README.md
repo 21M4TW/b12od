@@ -7,6 +7,5 @@ module. The module can be built using the wasm_binding target from the main
 directory of the repository.
 
 It can then be tested using
-```
-python -m http.server 8080
-```.
+
+```python -m http.server 8080``` .
